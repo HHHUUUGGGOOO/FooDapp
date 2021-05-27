@@ -35,4 +35,12 @@ contract OrderContract {
         // assure call by customer
     }
 
+    function UserRateDeliveryman(address user, uint score) external {
+        // rating
+    }
+
+    function DeliverymanRateCustomer(address user, uint score) external {
+        // rating
+    }
+
 }
