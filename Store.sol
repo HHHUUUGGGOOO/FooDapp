@@ -6,8 +6,8 @@ import "./BaseData.sol"
 
 contract StoreInterface {
 
-    function UserGetAllStore() external view returns (
-        // return list of all stores
+    function UserGetAllStore(string city_name) external view returns (
+        // return list of all stores in the specific city
     );
 
 }
@@ -17,7 +17,7 @@ contract StoreContract is BaseData {
     // Declare event
     event NewStore();
 
-    function StoreSetStore(uint64 storeID) external payable {
+    function StoreSetStore(uint64 storeID, string storeName, string[] menu, string intro) external payable {
         // return storeID
     }
 

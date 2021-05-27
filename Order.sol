@@ -5,11 +5,11 @@ pragma solidity >=0.4.25 <0.6.0;
 contract OrderInterface {
 
     function GetAllOrderBasicInformation() external view returns (
-        // return orderID, timestamp, fee, store
+        // return orderID, timestamp, fee, storeID
     );
 
-    function GetAllOrderDetailInformation() external view returns (
-        // return orderID, timestamp, fee, store, orderContent
+    function GetAllOrderDetailInformation(uint storeID) external view returns (
+        // return orderID, timestamp, fee, storeID, orderContent
     );
 
 }
@@ -19,11 +19,11 @@ contract OrderContract {
     // Declare event
     event NewOrder();
 
-    function UserSetMyOrderPost() external payable {
+    function UserSetMyOrderPost(uint storeID, uint[] items, uint[] items_number, uint delivery tip) external payable {
         // return orderID
     }
 
-    function SetOrderDelivering() external payable {
+    function SetOrderDelivering(uint orderID) external payable {
         // return orderID
     }
 
