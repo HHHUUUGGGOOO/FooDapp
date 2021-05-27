@@ -13,8 +13,8 @@ contract BaseData{
     struct Order {
         uint64 orderID;                 // Will be recycled if over 2^64
         uint64 storeID;                 // Will be recycled if over 2^64
-        uint16[] itemsID;               // Expect a store only has 65536 items available.
-        uint16 tipsValueMultiplicand;   // That is, their are only 65536 number of tip available.
+        uint16[] itemsID;               // Expect a store only has 65536 items available
+        uint16 tipsValueMultiplicand;   // That is, their are only 65536 number of tip available
     }
 
     mapping (address => uint8) userAddressToCustomerRating;

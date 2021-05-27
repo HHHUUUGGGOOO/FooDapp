@@ -17,12 +17,12 @@ contract StoreContract is BaseData {
     // Declare event
     event NewStore();
 
-    function StoreSetStore(uint64 storeID, string storeName, string[] menu, string intro) external payable {
+    function StoreSetStore(uint64 storeID, string storeName, string[] menu, string moreInfo) external payable {
         // return storeID
     }
 
     function StoreSetOrderConfirm(uint64 orderID) external {
-        // assure call by store of the order.
+        // assure call by store of the order
     }
 
     function RateStore(uint64 orderID, uint8 _newRate) external {
@@ -30,7 +30,7 @@ contract StoreContract is BaseData {
     }
 
     function GetAllOrderDetailInformation(uint64 storeID) external {
-        // returns a list of orders.
+        // return a list of orders
     }
 
 }

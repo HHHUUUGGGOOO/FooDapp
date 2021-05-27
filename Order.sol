@@ -27,4 +27,12 @@ contract OrderContract {
         // return orderID
     }
 
+    function SetOrderDelivered(uint64 orderID) external {
+        // assure call by deliveryman
+    }
+
+    function SetOrderReceived(uint64 orderID) external {
+        // assure call by customer
+    }
+
 }
