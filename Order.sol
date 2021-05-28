@@ -23,7 +23,7 @@ contract OrderContract {
         // return orderID
     }
 
-    function SetOrderDelivering(uint orderID) external payable {
+    function SetOrderDelivering(uint64 orderID) external payable {
         // return orderID
     }
 
@@ -35,12 +35,12 @@ contract OrderContract {
         // assure call by customer
     }
 
-    function UserRateDeliveryman(address user, uint score) external {
-        // rating
+    function UserRateDeliveryman(uint64 orderID, uint8 score) external {
+        // rating only int
     }
 
-    function DeliverymanRateCustomer(address user, uint score) external {
-        // rating
+    function DeliverymanRateCustomer(uint64 orderID, uint8 score) external {
+        // rating only int
     }
 
 }
