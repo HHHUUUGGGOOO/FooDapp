@@ -36,11 +36,11 @@ contract OrderContract {
     }
 
     function UserRateDeliveryman(uint64 orderID, uint score) external {
-        // rating only int (1~256)
+        // rating only int (1~256) / exp
     }
 
     function DeliverymanRateCustomer(uint64 orderID, uint score) external {
-        // rating only int (1~256)
+        // rating only int (1~256) / exp
     }
 
 }

@@ -29,8 +29,4 @@ contract StoreContract is BaseData {
         // return new rate
     }
 
-    function GetAllOrderDetailInformation(uint64 storeID) external {
-        // return a list of orders
-    }
-
 }
