@@ -23,9 +23,9 @@ contract OrderInterface is BaseData {
 
 }
 
-contract OrderContract is BaseData {
+contract OrderContract is BaseData, Ownable {
     // Declare event
-    event NewOrder(orderID, storeID, itemsID, itemsNumber, tips, d_score, u_score, s_score, u_rated, d_rated, s_rated, isConfirmed, isDelivering, isDelivered, isReceived);
+    event NewOrder(setTime, orderID, storeID, itemsID, itemsNumber, tips, d_score, u_score, s_score, u_rated, d_rated, s_rated, isConfirmed, isDelivering, isDelivered, isReceived, userAddr);
     event OrderDelivering(orderID);
     event OrderDelivered(orderID);
     event OrderReceived(orderID);
@@ -36,10 +36,31 @@ contract OrderContract is BaseData {
     uint _idDigit   = 64;
     uint _idModulus = 10 ** _idDigit;
 
+    // only us can withdraw the ether user sent to this contract
+    function withdraw() external onlyOwner {
+        address payable _owner = address(uint160(owner()));
+        _owner.transfer(address(this).balance);
+    }
+
+    // only the user can modify his/her order
+    modifier ownerOf(uint _orderId) {
+        require(msg.sender == orderIDToOrder[_orderId].userAddr);
+        _;
+    } 
+
+    // only the deliveryman can modify his/her order
+    modifier deliveryOf(uint _orderId) {
+        require(msg.sender == orderIDToOrder[_orderId].deliverymanAddr);
+        _;
+    }  
+
     function UserSetMyOrderPost(uint _storeID, uint[] memory _itemsID, uint[] memory _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
+        // need to pay ether
+        require(msg.value == 0.001 ether);
         // create a new orderID via keccak256 (block.timestamp (= now), _storeID, address)
-        uint _orderID = uint(keccak256(abi.encodePacked(now, _storeID, msg.sender))) % (_idModulus);
-        Order newOrder = new Order(_orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false);
+        uint _updateTime = now;
+        uint _orderID = uint(keccak256(abi.encodePacked(_updateTime, _storeID, msg.sender))) % (_idModulus);
+        Order newOrder = new Order(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false, msg.sender);
         // add a new order into the public set
         AllOrderList.push(newOrder);
         // add a new order to the store
@@ -49,20 +70,23 @@ contract OrderContract is BaseData {
         // mapping orderID to order
         orderIDToOrder[_orderID] = newOrder;
         // fire event
-        emit NewOrder(_orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false);
+        emit NewOrder(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false, msg.sender);
         // return orderID
         return _orderID;
     }
 
     function SetOrderDelivering(uint _orderID) external payable {
+        // need to pay ether
+        require(msg.value == 0.001 ether);
         // return orderID
+        orderIDToOrder[_orderID].deliverymanAddr = msg.sender;
         orderIDToOrder[_orderID].isDelivering = true;
         // fire event
         emit OrderDelivering(_orderID);
         // return;
     }
 
-    function SetOrderDelivered(uint _orderID) external {
+    function SetOrderDelivered(uint _orderID) external deliveryOf(_orderId) {
         // assure call by deliveryman
         orderIDToOrder[_orderID].isDelivered = true;
         // fire event
@@ -70,7 +94,7 @@ contract OrderContract is BaseData {
         // return;
     }
 
-    function SetOrderReceived(uint _orderID) external {
+    function SetOrderReceived(uint _orderID) external ownerOf(_orderID) {
         // assure call by customer
         orderIDToOrder[_orderID].isReceived = true;
         // fire event
@@ -78,7 +102,7 @@ contract OrderContract is BaseData {
         // return;
     }
 
-    function UserRateStore(uint _orderID, uint _userToStoreScore) external {
+    function UserRateStore(uint _orderID, uint _userToStoreScore) external ownerOf(_orderID) {
         // return new rate
         orderIDToOrder[_orderID].userToStoreScore = _userToStoreScore;
         storeIDToStore[orderIDToOrder[_orderID].storeID].PeopleNumRateTheStar[_userToStoreScore]++;
@@ -88,7 +112,7 @@ contract OrderContract is BaseData {
         // return;
     }
 
-    function UserRateDeliveryman(uint _orderID, uint _userToDeliverymanScore) external {
+    function UserRateDeliveryman(uint _orderID, uint _userToDeliverymanScore) external ownerOf(_orderID) {
         // rating only int (1~256) / exp
         orderIDToOrder[_orderID].userToDeliverymanScore = _userToDeliverymanScore;
         orderIDToOrder[_orderID].deliverymanIsRated = true;
@@ -97,7 +121,7 @@ contract OrderContract is BaseData {
         // return;
     }
 
-    function DeliverymanRateCustomer(uint _orderID, uint _deliverymanToUserScore) external {
+    function DeliverymanRateCustomer(uint _orderID, uint _deliverymanToUserScore) external deliveryOf(_orderId) {
         // rating only int (1~256) / exp
         orderIDToOrder[_orderID].deliverymanToUserScore = _deliverymanToUserScore;
         orderIDToOrder[_orderID].userIsRated = true;

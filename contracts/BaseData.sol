@@ -13,6 +13,7 @@ contract BaseData{
     }
 
     struct Order {
+        uint      setTime;
         uint      orderID;                 // Will be recycled if over 2^64
         uint      storeID;                 // Will be recycled if over 2^64
         uint[]    itemsID;                 // Expect a store only has 65536 items available
@@ -28,6 +29,8 @@ contract BaseData{
         bool      isDelivering;
         bool      isDelivered;
         bool      isReceived;
+        address   userAddr;
+        address   deliverymanAddr;
     }
 
     // mapping (address => uint8) public userAddressToCustomerRating;
