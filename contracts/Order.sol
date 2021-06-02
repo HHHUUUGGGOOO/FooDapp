@@ -2,6 +2,7 @@ pragma solidity >=0.4.25 <0.6.0;
 
 import "./BaseData.sol";
 import "./ownable.sol";
+import "./safemath.sol";
 
 // Create, edit, and view order here
 
@@ -24,7 +25,9 @@ contract OrderInterface is BaseData {
 }
 
 contract OrderContract is BaseData, Ownable {
-    // Declare event
+    // prevent overflow
+    using SafeMath for uint256;
+    // declare event
     event NewOrder(setTime, orderID, storeID, itemsID, itemsNumber, tips, d_score, u_score, s_score, u_rated, d_rated, s_rated, isConfirmed, isDelivering, isDelivered, isReceived, userAddr);
     event OrderDelivering(orderID);
     event OrderDelivered(orderID);
@@ -43,7 +46,7 @@ contract OrderContract is BaseData, Ownable {
     }
 
     // only the user can modify his/her order
-    modifier ownerOf(uint _orderId) {
+    modifier userOf(uint _orderId) {
         require(msg.sender == orderIDToOrder[_orderId].userAddr);
         _;
     } 
@@ -94,7 +97,7 @@ contract OrderContract is BaseData, Ownable {
         // return;
     }
 
-    function SetOrderReceived(uint _orderID) external ownerOf(_orderID) {
+    function SetOrderReceived(uint _orderID) external userOf(_orderID) {
         // assure call by customer
         orderIDToOrder[_orderID].isReceived = true;
         // fire event
@@ -102,17 +105,17 @@ contract OrderContract is BaseData, Ownable {
         // return;
     }
 
-    function UserRateStore(uint _orderID, uint _userToStoreScore) external ownerOf(_orderID) {
+    function UserRateStore(uint _orderID, uint _userToStoreScore) external userOf(_orderID) {
         // return new rate
         orderIDToOrder[_orderID].userToStoreScore = _userToStoreScore;
-        storeIDToStore[orderIDToOrder[_orderID].storeID].PeopleNumRateTheStar[_userToStoreScore]++;
+        storeIDToStore[orderIDToOrder[_orderID].storeID].PeopleNumRateTheStar[_userToStoreScore] = storeIDToStore[orderIDToOrder[_orderID].storeID].PeopleNumRateTheStar[_userToStoreScore].add(1);
         orderIDToOrder[_orderID].storeIsRated = true;
         // fire event
         emit StoreBeenRated(msg.sender, _orderID, _userToStoreScore);
         // return;
     }
 
-    function UserRateDeliveryman(uint _orderID, uint _userToDeliverymanScore) external ownerOf(_orderID) {
+    function UserRateDeliveryman(uint _orderID, uint _userToDeliverymanScore) external userOf(_orderID) {
         // rating only int (1~256) / exp
         orderIDToOrder[_orderID].userToDeliverymanScore = _userToDeliverymanScore;
         orderIDToOrder[_orderID].deliverymanIsRated = true;

@@ -2,6 +2,7 @@ pragma solidity >=0.4.25 <0.6.0;
 
 import "./BaseData.sol";
 import "./ownable.sol";
+import "./safemath.sol";
 
 // Create, edit, and view store here
 
@@ -14,7 +15,9 @@ contract StoreInterface is BaseData {
 }
 
 contract StoreContract is BaseData, Ownable {
-    // Declare event
+    // prevent overflow
+    using SafeMath for uint256;
+    // declare event
     event NewStore(storeID, ownerAddress, storeName, cityName, moreInfo, menu, rating);
     event OrderConfirmed(orderID);
 
