@@ -33,10 +33,11 @@ contract BaseData{
     // mapping (address => uint8) public userAddressToCustomerRating;
     // mapping (address => uint8) public userAddressToDeliverymanRating;
     // mapping (address => uint8) public userAddressToStoreRating;
-    mapping (uint => Store)    public storeIDToStore;
-    mapping (uint => Order)    public orderIDToOrder;
-
-    Store[] public AllStoreList;           // Other contracts would then be able to read from, but not write to, this array.
+    mapping (uint => Store)     public storeIDToStore;
+    mapping (uint => Order)     public orderIDToOrder;
+    mapping (uint => Order[])   public storeIDToOrder;
+    mapping (string => Store[]) public cityNameToStoreList;
+    
     Order[] public AllOrderList;        
 
 }

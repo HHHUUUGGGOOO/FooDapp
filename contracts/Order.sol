@@ -1,19 +1,25 @@
 pragma solidity >=0.4.25 <0.6.0;
 
 import "./BaseData.sol";
+import "./ownable.sol";
 
 // Create, edit, and view order here
 
-contract OrderInterface {
-    function GetSpecificOrderInformation() external view returns (
-        // return orderID, timestamp, fee, storeID
-        
-    );
+contract OrderInterface is BaseData {
+    function GetOrderbyOrderID(uint _orderID) external view returns (Order) {
+        // return 
+        return orderIDToOrder[_orderID];
+    }
 
-    function GetAllOrderInformation(uint _storeID) external view returns (
-        // return orderID, timestamp, fee, storeID, orderContent
-        
-    );
+    function GetOrderbyStoreID(uint _storeID) external view returns (Order[]) {
+        // return 
+        return storeIDToOrder[_storeID];
+    }
+
+    function GetAllOrderInformation() external view returns (Order[]) {
+        // return 
+        return AllOrderList;
+    }
 
 }
 
@@ -33,8 +39,15 @@ contract OrderContract is BaseData {
     function UserSetMyOrderPost(uint _storeID, uint[] memory _itemsID, uint[] memory _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
         // create a new orderID via keccak256 (block.timestamp (= now), _storeID, address)
         uint _orderID = uint(keccak256(abi.encodePacked(now, _storeID, msg.sender))) % (_idModulus);
+        Order newOrder = new Order(_orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false);
         // add a new order into the public set
-        AllOrderList.push(Order(_orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false));
+        AllOrderList.push(newOrder);
+        // add a new order to the store
+        Order[] storeIDToOrderList;
+        storeIDToOrderList = storeIDToOrder[_storeID];
+        storeIDToOrderList.push(newOrder);
+        // mapping orderID to order
+        orderIDToOrder[_orderID] = newOrder;
         // fire event
         emit NewOrder(_orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, false, false, false, false, false, false);
         // return orderID

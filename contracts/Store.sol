@@ -1,14 +1,15 @@
 pragma solidity >=0.4.25 <0.6.0;
 
 import "./BaseData.sol";
+import "./ownable.sol";
 
 // Create, edit, and view store here
 
-contract StoreInterface {
-    function UserGetAllStore(string memory _cityName) external view returns {
-        // return list of all stores in the specific city
-        return;
-    };
+contract StoreInterface is BaseData {
+    function UserGetAllStore(string memory _cityName) external view returns (Store[]) {
+        // return 
+        return cityNameToStoreList[_cityName];
+    }
 
 }
 
@@ -28,8 +29,13 @@ contract StoreContract is BaseData {
         for (uint i = 1 ; i != 6 ; i++) {
             star[i] = 0;
         }
+        Store newStore = new Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, star);
         // add a new store into the public set
-        AllStoreList.push(Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, star));
+        Store[] SpecificStoreList;
+        SpecificStoreList = cityNameToStoreList[_cityName];
+        SpecificStoreList.push(newStore);
+        // mapping storeID to store
+        storeIDToStore[_storeID] = newStore;
         // fire event
         emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, star);
         // return storeID
