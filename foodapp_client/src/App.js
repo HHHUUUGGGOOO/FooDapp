@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import logo from './logo.svg';
 import './App.css';
 import { fade, makeStyles } from '@material-ui/core/styles';
@@ -19,31 +19,66 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { InputBase } from '@material-ui/core';
+import { Button, ButtonGroup, FormControl, InputBase, Tab, Tabs, Select, MenuItem, InputLabel } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    flexDirection: "column",
+    height: '100vh',
   },
   appbar: {
     flexGrow: 1,
-    // position: 'absolute',
   },
   toolbar: {
     flexGrow: 1,
   },
-  content: {
-    flexGrow: 1,                // 這個容器長好長滿
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',    // flexDirection: 現在是由上到下排列
-    justifyContent: 'center',   // justifyContent: 在flex方向上的排列
-    alignItems: 'center',       // alignItems: 子物件在格子中的位置
+  identitySelectorTabs: {
+    flexGrow: 0.9,
+    borderRadius: 50,
+    backgroundColor: fade(theme.palette.common.white, 0.25),
   },
-  searchbar: {
+  identitySelectorTab: {
+    minWidth: 0,
+    margin: 5,
+    flexGrow: 0.9,
+    borderRadius: 50,
+    // backgroundColor: fade(theme.palette.common.white, 0.25),
+    // width: 30,
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+      // width: 50,
+    }
+  },
+  identitySelectorBox: {
+    color: 'inherit',
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: theme.spacing(2),
+    // width: '100%',
+    borderRadius: 50,
+    // padding: theme.spacing(1),
+  },
+  identitySelectorSelect: {
+    color: 'inherit',
+    '&:before': {
+      borderColor: theme.palette.common.white,
+    },
+    '&:after': {
+      borderColor: theme.palette.common.white,
+    },
+    margin: theme.spacing(1),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  identitySelectorSelectIcon: {
+    fill: 'white',
+  },
+  searchBarBox: {
     position: 'relative',
-    // borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
@@ -54,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: theme.spacing(1),
       width: 'auto',
     },
+    borderRadius: 50,
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -78,45 +114,92 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  appBarSpacer: theme.mixins.toolbar,
+  content: {
+    flexGrow: 1,                // 這個容器長好長滿
+
+    display: 'flex',
+    flexDirection: 'column',    // flexDirection: 現在是由上到下排列
+    justifyContent: 'center',   // justifyContent: 在flex方向上的排列
+    alignItems: 'center',       // alignItems: 子物件在格子中的位置
+    // flexGrow: 1,
+    // height: '100%',
+
+  },
 }))
 
 function App() {
   const classes = useStyles();
+  const [identity, setIdentity] = useState("Customer")
+  const [searchWord, setSearchWord] = useState('')
+  const handleIdentityChange = (event) => {
+    setIdentity(event.target.value);
+  };
+  const handleSearchWordChange = (event) => {
+    setSearchWord(event.target.value);
+  };
+
 
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar className={classes.appbar}
-        // color="transparent"
-        >
+      // color="purple"
+      >
         <Toolbar className={classes.toolbar}>
           <Typography className={classes.toolbar}>
             Toolbar (Add logo here)
           </Typography>
-          <Box borderRadius={50} className={classes.searchbar}>
+          <Box className={classes.searchBarBox}>
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
             <InputBase
               className={classes.inputInput}
-              placeholder="Search restaurant!" />
+              placeholder="Search restaurant!"
+              onChange={setSearchWord} />
+          </Box>
+          <Box className={classes.identitySelectorBox}>
+            <Select
+              className={classes.identitySelectorSelect}
+              labelId="demo-controlled-open-select-label"
+              id="demo-controlled-open-select"
+              // open={open}
+              // onClose={handleClose}
+              // onOpen={handleOpen}
+              value={identity}
+              onChange={handleIdentityChange}
+              inputProps={{
+                classes: {
+                    icon: classes.identitySelectorSelectIcon,
+                },
+              }}
+            >
+              <MenuItem value="Customer">我想訂餐</MenuItem>
+              <MenuItem value="Deliveryman">我是外送員</MenuItem>
+              <MenuItem value="Store">我是店家</MenuItem>
+            </Select>
           </Box>
         </Toolbar>
       </AppBar>
-      <header className={classes.content}>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* a place covered by appbar */}
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <div>
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.js</code> and save to reload.
+          </p>
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
+          </a>
+        </div>
+      </main>
     </div>
   );
 }
