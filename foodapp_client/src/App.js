@@ -21,6 +21,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { Button, ButtonGroup, FormControl, InputBase, Tab, Tabs, Select, MenuItem, InputLabel } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search'
+import CustomerPage from './CustomerPage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -185,20 +186,7 @@ function App() {
       {/* a place covered by appbar */}
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <div>
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </div>
+        {identity == "Customer" && <CustomerPage />}
       </main>
     </div>
   );
