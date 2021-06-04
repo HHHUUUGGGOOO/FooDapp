@@ -1,20 +1,18 @@
-pragma solidity >=0.4.25 <0.6.0;
-
-import "truffle/Assert.sol";
-import "truffle/DeployedAddresses.sol";
+pragma solidity ^0.5.0;
+// pragma experimental ABIEncoderV2;
 
 contract BaseData{
+    // store active time ?
     struct Store {
-        uint                    storeID;            
-        address                 ownerAddress;
-        string                  storeName;               // array, struct, string parameters in a function need to be stored in "memory"
-        string                  cityName;
-        string                  moreInfo;
-        string[]                menu;
-        mapping (uint => uint)  PeopleNumRateTheStar;   // e.g. 1 star: 20, 2 star: 11, ..., 5 star: 1 
-        // bool      isActive;
+        uint                storeID;            
+        address             ownerAddress;
+        string              storeName;     // array, struct, string parameters in a function need to be stored in "memory"
+        string              cityName;
+        string              moreInfo;
+        string              menu;       
     }
-
+    
+    // We can assign the limited 16 variables
     struct Order {
         uint      setTime;
         uint      orderID;                 // Will be recycled if over 2^64
@@ -25,9 +23,6 @@ contract BaseData{
         uint      userToDeliverymanScore;                   
         uint      deliverymanToUserScore;
         uint      userToStoreScore;
-        bool      userIsRated;             // deliveryman has rated user
-        bool      deliverymanIsRated;      // user has rated deliveryman
-        bool      storeIsRated;
         bool      isConfirmed;
         bool      isDelivering;
         bool      isDelivered;
@@ -35,15 +30,15 @@ contract BaseData{
         address   userAddr;
         address   deliverymanAddr;
     }
-
-    // mapping (address => uint8) public userAddressToCustomerRating;
-    // mapping (address => uint8) public userAddressToDeliverymanRating;
-    // mapping (address => uint8) public userAddressToStoreRating;
-    mapping (uint => Store)     public storeIDToStore;
-    mapping (uint => Order)     public orderIDToOrder;
-    mapping (uint => Order[])   public storeIDToOrder;
-    mapping (string => Store[]) public cityNameToStoreList;
     
-    Order[] public AllOrderList;        
+    mapping (uint => Store)                      public storeIDToStore;      
+    mapping (uint => Order)                      public orderIDToOrder;
+    mapping (uint => uint[])                     public storeIDToOrder;       // => Order[] --> => uint[]
+    mapping (string => uint[])                   public cityNameToStoreList;  // => Store[] is not supported (struct dynamic array) --> => uint[]
+    mapping (uint => mapping (uint => uint))     public PeopleNumRateTheStar; // storeID to its rate, e.g. 1 star: 20 people, ..., 5 star: 1 people
+    
+    uint[] public AllOrderList;   // Order[] --> uint[]  
+    uint   public storeid = 0;
+    uint   public orderid = 0; 
 
 }

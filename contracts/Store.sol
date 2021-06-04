@@ -1,27 +1,26 @@
-pragma solidity >=0.4.25 <0.6.0;
+pragma solidity ^0.5.0;
+// pragma experimental ABIEncoderV2;
 
-import "truffle/Assert.sol";
-import "truffle/DeployedAddresses.sol";
 import "./BaseData.sol";
 import "./ownable.sol";
-import "./safemath.sol";
+// import "./safemath.sol";
 
 // Create, edit, and view store here
 
 contract StoreInterface is BaseData {
-    function UserGetAllStore(string memory _cityName) external view returns (Store[]) {
-        // return 
+    function UserGetAllStore(string memory _cityName) public view returns(uint[] memory) {
+        // return storeID[]
         return cityNameToStoreList[_cityName];
     }
-
 }
 
 contract StoreContract is BaseData, Ownable {
     // prevent overflow
-    using SafeMath for uint256;
+    // using SafeMath for uint256;
+
     // declare event
-    event NewStore(storeID, ownerAddress, storeName, cityName, moreInfo, menu, rating);
-    event OrderConfirmed(orderID);
+    event NewStore(uint storeID, address ownerAddress, string storeName, string cityName, string moreInfo, string menu);
+    event OrderConfirmed(uint orderID);
 
     uint _idDigit   = 64;
     uint _idModulus = 10 ** _idDigit;
@@ -32,27 +31,38 @@ contract StoreContract is BaseData, Ownable {
         _owner.transfer(address(this).balance);
     }
 
-    function StoreSetStore(uint _storeID, string memory _storeName, string memory _cityName, string memory _moreInfo, string[] memory _menu) external payable returns(uint) {
-        // need to pay ether
-        require(msg.value == 0.001 ether);
-        // create a new storeID via keccak256 (_storeName, _cityName), hence, only you change the storename and cityname will affect the storeID
-        uint _storeID = uint(keccak256(abi.encodePacked(_storeName, _cityName))) % (_idModulus);
-        // default every rating star with 0 people
-        mapping (uint => uint) star;
-        for (uint i = 1 ; i != 6 ; i++) {
-            star[i] = 0;
+    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable returns(uint) {
+        if (_storeID == uint(0)){
+            // need to pay ether
+            require(msg.value == 0.001 ether);
+            // create a new storeID via keccak256 (_storeName, _cityName), hence, only you change the storename and cityname will affect the storeID
+            storeid++;
+            _storeID = storeid;
+            // default every rating star with 0 people
+            for (uint i = 1 ; i != 6 ; i++) {
+                PeopleNumRateTheStar[_storeID][i] = 0;
+            }
+            Store memory newStore = Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            // add a new store into the public set
+            cityNameToStoreList[_cityName].push(_storeID);
+            // mapping storeID to store
+            storeIDToStore[_storeID] = newStore;
+            // fire event
+            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            // return storeID
+            return _storeID;
+        } else if (_storeID > uint(0)) {
+            // if want to modify
+            require(msg.sender == storeIDToStore[_storeID].ownerAddress);
+            storeIDToStore[_storeID].storeName = _storeName;
+            storeIDToStore[_storeID].cityName = _cityName;
+            storeIDToStore[_storeID].moreInfo = _moreInfo;
+            storeIDToStore[_storeID].menu = _menu;
+            // fire event
+            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            // return storeID
+            return _storeID;
         }
-        Store newStore = new Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, star);
-        // add a new store into the public set
-        Store[] SpecificStoreList;
-        SpecificStoreList = cityNameToStoreList[_cityName];
-        SpecificStoreList.push(newStore);
-        // mapping storeID to store
-        storeIDToStore[_storeID] = newStore;
-        // fire event
-        emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, star);
-        // return storeID
-        return _storeID;
     }
 
     function StoreSetOrderConfirm(uint _orderID) external {
@@ -62,5 +72,4 @@ contract StoreContract is BaseData, Ownable {
         emit OrderConfirmed(_orderID);
         // return;
     }
-
 }
