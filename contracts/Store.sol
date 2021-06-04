@@ -1,5 +1,7 @@
 pragma solidity >=0.4.25 <0.6.0;
 
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
 import "./BaseData.sol";
 import "./ownable.sol";
 import "./safemath.sol";
