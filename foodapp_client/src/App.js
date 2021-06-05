@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
-// import './App.css';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { 
-  CssBaseline, Box, AppBar, Toolbar, InputBase, 
-  Typography, Select, MenuItem, IconButton
+import {
+  CssBaseline, Box, AppBar, Toolbar, InputBase,
+  Typography, Select, MenuItem, IconButton, LinearProgress
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search'
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
+
 import CustomerPage from './CustomerPage';
 import StorePanel from './StorePanel';
-// import getWeb3 from './utils/getWeb3';
 
+import FooDappContract from './build/contracts/Store_Order.json'
 
+import getWeb3 from './utils/getWeb3';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -137,6 +138,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [identity, setIdentity] = useState("Customer")
   const [searchWord, setSearchWord] = useState('')
+  const [web3States, setWeb3States] = useState({ web3: null, accounts: null, contract: null })
   const handleIdentityChange = (event) => {
     setIdentity(event.target.value);
   };
@@ -144,25 +146,37 @@ function App() {
     console.log("Search~~")
   };
 
-  // const Logining = async () => {
-  //   setIsLoading(true);
-  //   console.log("logining...");
-  //   try {
-  //     const web3 = await getWeb3();
-  //     const accounts = await web3.eth
-  //   }
-  //   setIsLoading(false);
-  // }
+  const Login = async () => {
+    console.log("logining...");
+    setIsLoading(true);
+    try {
+      const web3 = await getWeb3();
+      const accounts = await web3.eth.getAccounts();
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = FooDappContract.networks[networkId];
+      const instance = new web3.eth.Contract(
+        FooDappContract.abi,
+        deployedNetwork && deployedNetwork.address,
+      );
+      setWeb3States({ web3, accounts, contract: instance });
+    } catch (error) {
+      alert(
+        `Failed to load web3, accounts, or contract. Check console for details.`,
+      );
+      console.error(error);
+    };
+    setIsLoading(false);
+  }
 
-  // useEffect(async ()=>{
-  //   await Logining();
-  // }, [])
+  useEffect(async () => {
+    await Login();
+  }, [])
 
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar className={classes.appbar}
-      // color="purple"
+      // color="transparent"
       >
         <Toolbar className={classes.toolbar}>
           <Typography className={classes.toolbar}>
@@ -176,7 +190,7 @@ function App() {
               className={classes.inputInput}
               defaultValue={searchWord}
               placeholder="Search restaurant!"
-              onChange={(event) => {setSearchWord(event.target.value)}}
+              onChange={(event) => { setSearchWord(event.target.value) }}
             />
             <IconButton className={classes.searchReturnButton} color="inherit" onClick={handleSearchWordChange} variant='contained'>
               <KeyboardReturnIcon />
@@ -194,7 +208,7 @@ function App() {
               onChange={handleIdentityChange}
               inputProps={{
                 classes: {
-                    icon: classes.identitySelectorSelectIcon,
+                  icon: classes.identitySelectorSelectIcon,
                 },
               }}
             >
@@ -204,13 +218,28 @@ function App() {
             </Select>
           </Box>
         </Toolbar>
+        {isLoading && <LinearProgress />}
       </AppBar>
       {/* a place covered by appbar */}
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        {identity === "Customer" && <CustomerPage className={classes.page} />}
-        {identity === "Deliveryman" && <Box className={classes.page} />}
-        {identity === "Store" && <StorePanel className={classes.page} />}
+        {identity === "Customer" &&
+          <CustomerPage
+            className={classes.page}
+            setIsLoading={setIsLoading}
+            web3States={web3States}
+          />}
+        {identity === "Deliveryman" && 
+          <Box 
+            className={classes.page} 
+            setIsLoading={setIsLoading} 
+          />}
+        {identity === "Store" && 
+          <StorePanel 
+            className={classes.page} 
+            setIsLoading={setIsLoading} 
+            web3States={web3States}
+          />}
       </main>
     </div>
   );

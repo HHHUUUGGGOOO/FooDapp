@@ -21,10 +21,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function CustomerPage() {
+export default function CustomerPage(props) {
   const classes = useStyles();
   const city = "Taipei";
   const [isOrdering, setIsOrdering] = useState(false);
+  const set_is_loading = props.setIsLoading;
+  const contract = props.web3States.contract;
   const [orderingStoreID, setOrderingStoreID] = useState(0);
   const [menuList, setMenuList] = useState([])
   const [storeList, setStoreList] = useState([
@@ -86,7 +88,11 @@ export default function CustomerPage() {
   return (
     <Container className={classes.customerPageContainer}>
       {storeList.map((store) => (
-        <Paper className={classes.customerPageStorePaper} onClick={()=>{handleClickStore(store.storeID)}}>
+        <Paper
+          className={classes.customerPageStorePaper}
+          onClick={()=>{handleClickStore(store.storeID)}}
+          key={store.storeID}
+        >
           <div className={classes.customerPageStoreInfoSection}>
             <Typography variant="h5">{store.storeName}</Typography>
             <Typography variant="subtitle2">{store.moreInfo}</Typography>
