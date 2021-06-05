@@ -12,6 +12,11 @@ contract StoreInterface is BaseData {
         // return storeID[]
         return cityNameToStoreList[_cityName];
     }
+
+    function AddressGetStoreID() public view returns(uint[] memory) {
+        // return 
+        return ownerAddrToStoreID[msg.sender];
+    }
 }
 
 contract StoreContract is BaseData, Ownable {
@@ -47,6 +52,7 @@ contract StoreContract is BaseData, Ownable {
             cityNameToStoreList[_cityName].push(_storeID);
             // mapping storeID to store
             storeIDToStore[_storeID] = newStore;
+            ownerAddrToStoreID[msg.sender].push(_storeID);
             // fire event
             emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
             // return storeID
