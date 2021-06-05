@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // import './App.css';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { 
   CssBaseline, Box, AppBar, Toolbar, InputBase, 
-  Typography, Select, MenuItem 
+  Typography, Select, MenuItem, IconButton
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search'
+import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 import CustomerPage from './CustomerPage';
 import StorePanel from './StorePanel';
+// import getWeb3 from './utils/getWeb3';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
   },
   searchBarBox: {
     position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
@@ -81,8 +87,17 @@ const useStyles = makeStyles((theme) => ({
   searchIcon: {
     padding: theme.spacing(0, 2),
     height: '100%',
-    position: 'absolute',
+    // position: 'absolute',
     pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchReturnButton: {
+    padding: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    height: '100%',
+    // pointerEvents: 'none',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -91,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'inherit',
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    // paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
@@ -109,23 +124,39 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',    // flexDirection: 現在是由上到下排列
     justifyContent: 'center',   // justifyContent: 在flex方向上的排列
     alignItems: 'center',       // alignItems: 子物件在格子中的位置
-    // flexGrow: 1,
-    // height: '100%',
-
+    height: '100vh',
+  },
+  page: {
+    display: 'flex',
+    flexGrow: 1,
   },
 }))
 
 function App() {
   const classes = useStyles();
+  const [isLoading, setIsLoading] = useState(true);
   const [identity, setIdentity] = useState("Customer")
   const [searchWord, setSearchWord] = useState('')
   const handleIdentityChange = (event) => {
     setIdentity(event.target.value);
   };
   const handleSearchWordChange = (event) => {
-    setSearchWord(event.target.value);
+    console.log("Search~~")
   };
 
+  // const Logining = async () => {
+  //   setIsLoading(true);
+  //   console.log("logining...");
+  //   try {
+  //     const web3 = await getWeb3();
+  //     const accounts = await web3.eth
+  //   }
+  //   setIsLoading(false);
+  // }
+
+  // useEffect(async ()=>{
+  //   await Logining();
+  // }, [])
 
   return (
     <div className={classes.root}>
@@ -143,8 +174,13 @@ function App() {
             </div>
             <InputBase
               className={classes.inputInput}
+              defaultValue={searchWord}
               placeholder="Search restaurant!"
-              onChange={setSearchWord} />
+              onChange={(event) => {setSearchWord(event.target.value)}}
+            />
+            <IconButton className={classes.searchReturnButton} color="inherit" onClick={handleSearchWordChange} variant='contained'>
+              <KeyboardReturnIcon />
+            </IconButton>
           </Box>
           <Box className={classes.identitySelectorBox}>
             <Select
@@ -172,9 +208,9 @@ function App() {
       {/* a place covered by appbar */}
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        {identity == "Customer" && <CustomerPage />}
-        {identity == "Deliveryman" && <Box />}
-        {identity == "Store" && <StorePanel />}
+        {identity === "Customer" && <CustomerPage className={classes.page} />}
+        {identity === "Deliveryman" && <Box className={classes.page} />}
+        {identity === "Store" && <StorePanel className={classes.page} />}
       </main>
     </div>
   );

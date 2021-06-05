@@ -1,16 +1,18 @@
 import {
   Box,
   Button,
-  Container, Divider, Grid, makeStyles, Paper,
+  CircularProgress,
+  Container, Divider, Grid, LinearProgress, makeStyles, Paper,
   TextField, ThemeProvider, Typography
 } from "@material-ui/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   storePanelContainer: {
     display: 'flex',
     flexDirection: 'column',
     maxWidth: 700,
+    flexGrow: 1,
   },
   storePanelPaper: {
     margin: theme.spacing(2),
@@ -29,13 +31,27 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: 'flex',
     justifyContent: 'flex-end',
-  }
+  },
+  storePanelButtonWrapper: {
+    position: 'relative',
+  },
+  storePanelButtonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
 }))
 
-export default function StorePanel() {
+export default function StorePanel(props) {
   const classes = useStyles();
   const [isEditing, setIsEditing] = useState(true);
-  const yourStore = {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // const setIsLoading = props.setIsLoading;
+  const [isSavingChanges, setIsSavingChanges] = useState(false);
+  const myStore = {
     storeID: 1,
     ownerAddress: "0xC27a5270dCd16Ca93145ca54b67014A4F5BFF0c1",
     storeName: "I'm Pasta",
@@ -53,112 +69,123 @@ export default function StorePanel() {
       5: 60
     }
   };
-  const [storeName, setStoreName] = useState(yourStore.storeName);
-  const [ownerAddress, setOwnerAddress] = useState(yourStore.ownerAddress);
-  const [cityName, setCityName] = useState(yourStore.cityName);
-  const [moreInfo, setMoreInfo] = useState(yourStore.moreInfo);
-  const [menuString, setMenuString] = useState(yourStore.menu.join("\n"));
+  const [myStoreList, setMyStoreList] = useState([myStore]);
+  const [storeName, setStoreName] = useState(myStore.storeName);
+  const [ownerAddress, setOwnerAddress] = useState(myStore.ownerAddress);
+  const [cityName, setCityName] = useState(myStore.cityName);
+  const [moreInfo, setMoreInfo] = useState(myStore.moreInfo);
+  const [menuString, setMenuString] = useState(myStore.menu.join("\n"));
 
-  const handleSaveChanges = () => {}
+  const Loading = async () => {
+    setIsLoading(true);
+    // expect loading...
+    console.log("loading...")
+    await new Promise(r => setTimeout(r, 2000));
+    // setMyStoreList([myStore]);
+    console.log("loaded.")
+    setIsLoading(false);
+  }
+
+  useEffect(async ()=>{
+    await Loading();
+    console.log("trying to load...")
+  }, [])
+
+  const handleSaveChanges = async () => {
+    // expect: send to contract, then refresh. may need a loading animation
+    setIsSavingChanges(true);
+    await new Promise(r => setTimeout(r, 2000));
+    Loading();
+    setIsSavingChanges(false);
+  }
 
   return (
-    <Container className={classes.storePanelContainer}>
-      {isEditing ? (
+    <div>
+      {isLoading && <LinearProgress />}
+      <Container className={classes.storePanelContainer}>
         <Paper className={classes.storePanelPaper}>
-          <Box className={classes.storePanelTitle}>
-            <Typography variant="h3" gutterBottom align="center">Edit Store Information</Typography>
-          {/* </ Box>
-          <Box className={classes.storePanelDetails}> */}
-            <TextField
-              disabled
-              value={yourStore.storeID}
-              id="storeID"
-              name="storeID"
-              label="Store ID"
-              fullWidth
-              variant="outlined"
-            />
-          </Box>
-          <Divider />
-          <Box className={classes.storePanelDetails}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  id="storeName"
-                  name="storeName"
-                  label="Store Name"
-                  defaultValue={yourStore.storeName}
-                  fullWidth
-                  variant="outlined"
+            <Box className={classes.storePanelTitle}>
+              <Typography variant="h3" gutterBottom align="center">Edit Store Information</Typography>
+              {/* </ Box>
+            <Box className={classes.storePanelDetails}> */}
+              <TextField
+                disabled
+                value={myStore.storeID}
+                id="storeID"
+                name="storeID"
+                label="Store ID"
+                fullWidth
+                variant="outlined"
+              />
+            </Box>
+            <Divider />
+            <Box className={classes.storePanelDetails}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    id="storeName"
+                    name="storeName"
+                    label="Store Name"
+                    defaultValue={myStore.storeName}
+                    fullWidth
+                    variant="outlined"
                   />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  id="cityName"
-                  name="cityName"
-                  label="City"
-                  defaultValue={yourStore.cityName}
-                  fullWidth
-                  variant="outlined"
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    id="cityName"
+                    name="cityName"
+                    label="City"
+                    defaultValue={myStore.cityName}
+                    fullWidth
+                    variant="outlined"
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    id="moreInfo"
+                    name="moreInfo"
+                    label="More Information"
+                    defaultValue={myStore.moreInfo}
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    id="menu"
+                    name="menu"
+                    label="Menu (separate with new lines)"
+                    defaultValue={myStore.menuString}
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="moreInfo"
-                  name="moreInfo"
-                  label="More Information"
-                  defaultValue={yourStore.moreInfo}
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="menu"
-                  name="menu"
-                  label="Menu (separate with new lines)"
-                  defaultValue={yourStore.menuString}
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          <Box className={classes.storePanelButtonBox}>
-            <Button
-              variant="contained"
-              color='primary'
-            >
-              Save Changes
-            </Button>
-          </Box>
-        </Paper>
-      ) : (
-        <Paper>
-          <div className={classes.storePanelTitle}>
-            <Typography variant="h1">{yourStore.storeName}</Typography>
-            <Typography variant="subtitle1">{yourStore.moreInfo}</Typography>
-          </div>
-          <Divider />
-          <div className={classes.storePanelDetails}>
-            <Typography variant="h4">{"storeID: " + yourStore.storeID}</Typography>
-            <Typography variant="h4">{"owner:   " + yourStore.ownerAddress}</Typography>
-            <Typography variant="h4">{"city:    " + yourStore.cityName}</Typography>
-            <Typography variant="h4">Menu:    </Typography>
-            {yourStore.menu.map((item) => (
-              <Typography variant="body1">{"🥡 " + item}</Typography>
-            ))}
-          </div>
-        </Paper>
-      )}
-    </Container>
+            </Box>
+            <Box className={classes.storePanelButtonBox}>
+              <Box className={classes.storePanelButtonWrapper}>
+                <Button
+                  variant="contained"
+                  color='primary'
+                  onClick={handleSaveChanges}
+                  disabled={isSavingChanges}
+                >
+                  Save Changes
+                </Button>
+                {isSavingChanges && <CircularProgress size={24} className={classes.storePanelButtonProgress} />}
+              </Box>
+            </Box>
+          </Paper>
+      </Container>
+    </div>
   )
 }

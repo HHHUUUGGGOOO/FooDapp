@@ -1,4 +1,4 @@
-import { Container, Divider, makeStyles, Paper, Typography } from "@material-ui/core";
+import { Container, Dialog, DialogContent, DialogTitle, Divider, makeStyles, Paper, Typography } from "@material-ui/core";
 import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
 export default function CustomerPage() {
   const classes = useStyles();
   const city = "Taipei";
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [orderingStoreID, setOrderingStoreID] = useState(0);
+  const [menuList, setMenuList] = useState([])
   const [storeList, setStoreList] = useState([
     {
       storeID: 1,
@@ -75,10 +78,15 @@ export default function CustomerPage() {
     }
   ]);
 
+  const handleClickStore = (storeID) => {
+    setOrderingStoreID(storeID);
+    setIsOrdering(true);
+  }
+
   return (
     <Container className={classes.customerPageContainer}>
       {storeList.map((store) => (
-        <Paper className={classes.customerPageStorePaper}>
+        <Paper className={classes.customerPageStorePaper} onClick={()=>{handleClickStore(store.storeID)}}>
           <div className={classes.customerPageStoreInfoSection}>
             <Typography variant="h5">{store.storeName}</Typography>
             <Typography variant="subtitle2">{store.moreInfo}</Typography>
@@ -91,6 +99,20 @@ export default function CustomerPage() {
           </div>
         </Paper>
       ))}
+      <Dialog open={isOrdering} onClose={()=>{setIsOrdering(false)}}>
+        <DialogTitle>orderingStoreID</DialogTitle>
+        {/* <DialogContent>
+        <TextField
+          required
+          id="storeName"
+          name="storeName"
+          label="Store Name"
+          defaultValue={myStore.storeName}
+          fullWidth
+          variant="outlined"
+        />
+        </DialogContent> */}
+      </Dialog>
     </Container>
   )
 }
