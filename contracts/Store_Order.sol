@@ -36,10 +36,10 @@ contract Store_Order is BaseData, ownable {
         return ownerAddrToStoreID[msg.sender];
     }
 
-    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable returns(uint) {
+    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable returns(uint) {      
         if (_storeID == uint(0)){
             // need to pay ether
-            require(msg.value == 0.001 ether);
+            // require(msg.value == 0.001 ether);
             // create a new storeID via keccak256 (_storeName, _cityName), hence, only you change the storename and cityname will affect the storeID
             storeid++;
             _storeID = storeid;
@@ -59,7 +59,7 @@ contract Store_Order is BaseData, ownable {
             return _storeID;
         } else if (_storeID > uint(0)) {
             // if want to modify
-            require(msg.sender == storeIDToStore[_storeID].ownerAddress);
+            // require(msg.sender == storeIDToStore[_storeID].ownerAddress);
             storeIDToStore[_storeID].storeName = _storeName;
             storeIDToStore[_storeID].cityName = _cityName;
             storeIDToStore[_storeID].moreInfo = _moreInfo;
@@ -118,7 +118,7 @@ contract Store_Order is BaseData, ownable {
     function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
         if (_orderID == uint(0)) {
             // need to pay ether
-            require(msg.value == 0.001 ether);
+            // require(msg.value == 0.001 ether);
             // create a new orderID via keccak256 (block.timestamp (= now), _storeID, address)
             uint _updateTime = now;
             orderid++;
@@ -138,7 +138,7 @@ contract Store_Order is BaseData, ownable {
             return _orderID;
         } else if (_orderID > uint(0)) {
             // if want to modify
-            require(msg.sender == orderIDToOrder[_orderID].userAddr);
+            // require(msg.sender == orderIDToOrder[_orderID].userAddr);
             orderIDToOrder[_orderID].setTime = now;
             orderIDToOrder[_orderID].storeID = _storeID;
             orderIDToOrder[_orderID].itemsID = _itemsID;
@@ -154,7 +154,7 @@ contract Store_Order is BaseData, ownable {
 
     function SetOrderDelivering(uint _orderID) external payable {
         // need to pay ether
-        require(msg.value == 0.001 ether);
+        // require(msg.value == 0.001 ether);
         // return orderID
         orderIDToOrder[_orderID].deliverymanAddr = msg.sender;
         orderIDToOrder[_orderID].isDelivering = true;
