@@ -49,7 +49,7 @@ contract Store_Order is BaseData, ownable {
         return (_storeID, _ownerAddress, _storeName, _cityName, _moreInfo, _menu);
     }
 
-    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable returns(uint) {      
+    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable {      
         if (_storeID == uint(0)){
             // need to pay ether
             require(msg.value == 0.001 ether, "Not enough ether to set store...");
@@ -68,8 +68,7 @@ contract Store_Order is BaseData, ownable {
             ownerAddrToStoreID[msg.sender].push(_storeID);
             // fire event
             emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
-            // return storeID
-            return _storeID;
+            
         } else if (_storeID > uint(0)) {
             // if want to modify
             require(msg.sender == storeIDToStore[_storeID].ownerAddress, "Not the owner to modify store...");
@@ -79,8 +78,7 @@ contract Store_Order is BaseData, ownable {
             storeIDToStore[_storeID].menu = _menu;
             // fire event
             emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
-            // return storeID
-            return _storeID;
+            
         }
     }
 
@@ -157,7 +155,7 @@ contract Store_Order is BaseData, ownable {
         _;
     }  
 
-    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
+    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable {
         if (_orderID == uint(0)) {
             // need to pay ether
             require(msg.value == _setOrderFee, "Not enough ether to post order...");
@@ -176,8 +174,7 @@ contract Store_Order is BaseData, ownable {
             emit NewOrderBasic(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
             emit NewOrderScore(0, 0, 0);
             emit NewOrderBoolandAddr(false, false, false, false, msg.sender, address(0));
-            // return orderID
-            return _orderID;
+            
         } else if (_orderID > uint(0)) {
             // if want to modify
             require(msg.sender == orderIDToOrder[_orderID].userAddr, "Not the owner of this order...");
@@ -188,8 +185,7 @@ contract Store_Order is BaseData, ownable {
             orderIDToOrder[_orderID].tipsValueMultiplicand = _tipsValueMultiplicand;
             // fire new order event
             emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
-            // return orderID
-            return _orderID;
+            
         }
         
     }
