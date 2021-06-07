@@ -168,8 +168,8 @@ function App() {
     setIsLoading(false);
   }
 
-  useEffect(async () => {
-    await Login();
+  useEffect(() => {
+    Login();
   }, [])
 
   return (
@@ -226,18 +226,18 @@ function App() {
         {identity === "Customer" &&
           <CustomerPage
             className={classes.page}
-            setIsLoading={setIsLoading}
+            isLoadingPair={{isLoading, setIsLoading}}
             web3States={web3States}
           />}
         {identity === "Deliveryman" && 
           <Box 
             className={classes.page} 
-            setIsLoading={setIsLoading} 
+            isLoadingPair={{isLoading, setIsLoading}} 
           />}
         {identity === "Store" && 
           <StorePanel 
             className={classes.page} 
-            setIsLoading={setIsLoading} 
+            isLoadingPair={{isLoading, setIsLoading}} 
             web3States={web3States}
           />}
       </main>
