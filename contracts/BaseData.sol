@@ -39,6 +39,7 @@ contract BaseData{
     mapping (address => uint[])                  public ownerAddrToStoreID;
     
     uint[] public AllOrderList;   // Order[] --> uint[]  
+    uint[] public AllStoreList;
     uint   public storeid = 0;
     uint   public orderid = 0; 
 

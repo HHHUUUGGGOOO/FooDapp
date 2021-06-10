@@ -34,6 +34,11 @@ contract Store_Order is BaseData, ownable {
         return cityNameToStoreList[_cityName];
     }
 
+    function ListAllStore() public view returns(uint[] memory) {
+        // return storeID[]
+        return AllStoreList;
+    }
+
     function AddressGetStoreID() public view returns(uint[] memory) {
         // return 
         return ownerAddrToStoreID[msg.sender];
@@ -63,6 +68,7 @@ contract Store_Order is BaseData, ownable {
             Store memory newStore = Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
             // add a new store into the public set
             cityNameToStoreList[_cityName].push(_storeID);
+            AllStoreList.push(_storeID);
             // mapping storeID to store
             storeIDToStore[_storeID] = newStore;
             ownerAddrToStoreID[msg.sender].push(_storeID);
