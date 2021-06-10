@@ -13,6 +13,7 @@ import StorePanel from './StorePanel';
 import FooDappContract from './build/contracts/Store_Order.json'
 
 import getWeb3 from './utils/getWeb3';
+import DeliverymanPanel from './DeliverymanPanel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -230,9 +231,10 @@ function App() {
             web3States={web3States}
           />}
         {identity === "Deliveryman" && 
-          <Box 
+          <DeliverymanPanel 
             className={classes.page} 
             isLoadingPair={{isLoading, setIsLoading}} 
+            web3States={web3States}
           />}
         {identity === "Store" && 
           <StorePanel 
