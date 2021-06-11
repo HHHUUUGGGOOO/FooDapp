@@ -190,7 +190,7 @@ contract Store_Order is BaseData, ownable {
             orderIDToOrder[_orderID].itemsNumber = _itemsNumber;
             orderIDToOrder[_orderID].tipsValueMultiplicand = _tipsValueMultiplicand;
             // fire new order event
-            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
+            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand);
             
         }
         return _orderID;
