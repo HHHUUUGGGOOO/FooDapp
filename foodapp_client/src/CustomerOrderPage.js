@@ -1,6 +1,6 @@
 import {
     Box, Button, CircularProgress, Divider, Grid,
-    makeStyles, Paper, Typography
+    makeStyles, Paper, Typography, TextField
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import Web3 from 'web3'
@@ -67,13 +67,22 @@ export default function CustomerOrderPage(props) {
                         ))}
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                        <Typography align="right">{[1, 2, 3]}</Typography>
+                        {orderDetail[5].split("\n").map((dish) => (
+                            <TextField
+                            onChange={(event) => { console.log(event); }}
+                            />
+                        ))}
+                        
                     </Grid>
                 </Grid>
             </Box>
             <Divider />
             <Box className={classes.DeliverymanOrderFooterBox}>
-                <Typography variant="h5">{"Tips: $ " + '5'}</Typography>
+                <Typography variant="h5">Tips: $ 
+                            {<TextField
+                            onChange={(event) => { console.log(event); }}
+                            />}
+                </Typography>
                 <Box className={classes.DeliverymanOrderButtonWrapper}>
                     <Button
                         variant="contained"
