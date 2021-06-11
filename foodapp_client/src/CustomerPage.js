@@ -1,27 +1,45 @@
 import {
   Button, Container, Dialog, DialogContent, DialogTitle, Divider,
-  makeStyles, Paper, Typography, Box, CircularProgress, Grid
+  makeStyles, Paper, Typography, Box, CircularProgress, Grid, Fab
 } from "@material-ui/core";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
 
 const useStyles = makeStyles((theme) => ({
+  customerPanelBox:{
+    display: 'flex',
+    width: '100vw',
+    margin: theme.spacing(1),
+  },
+  customerPanelFabsBox: {
+    position: 'absolute',
+    right: theme.spacing(3),
+    bottom: theme.spacing(3),
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  customerPanelFab: {
+    marginTop: theme.spacing(1),
+  },
   customerPageContainer: {
     display: 'flex',
     flexDirection: 'row',
+    paddingTop: theme.spacing(3),
   },
   customerPageStorePaper: {
     display: 'flex',
     flexDirection: 'column',
-    minWidth: 0,
-    margin: theme.spacing(1),
-    padding: theme.spacing(1),
+    width: '100%',
+    height: '100%',
+    // margin: theme.spacing(1),
+    // padding: theme.spacing(1),
   },
   customerPageStoreInfoSection: {
-    margin: theme.spacing(1),
+    padding: theme.spacing(2),
+    paddingBottom: theme.spacing(0),
   },
   customerPageStoreMenuSection: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2),
   },
 }));
 
@@ -80,29 +98,43 @@ export default function CustomerPage(props) {
     loadStore();
   }, [contract])
 
-
-
   return (
-    <Container className={classes.customerPageContainer}>
-      { storeList.map((store) => (
-        <Paper
-          className={classes.customerPageStorePaper}
-          onClick={() => { handleClickStore(store.storeID) }}
-          key={store.storeID}
+    <Box className={classes.customerPanelBox}>
+      <Container className={classes.customerPageContainer}>
+        <Grid container spacing={4}>
+          { storeList.map((store, index) => (
+            <Grid item key={index} xs={12} sm={6} md={4}>
+              <Paper
+                className={classes.customerPageStorePaper}
+                onClick={() => { handleClickStore(store.storeID) }}
+                key={store.storeID}
+              >
+                <Box className={classes.customerPageStoreInfoSection}>
+                  <Typography variant="h4">{store.storeName}</Typography>
+                  <Typography variant="subtitle2">{store.moreInfo}</Typography>
+                </Box>
+                <Divider />
+                <Box className={classes.customerPageStoreMenuSection}>
+                  {store.menu.map((item) => (
+                    <Typography variant="body1">{"🥡 " + item}</Typography>
+                  ))}
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+        <Button onClick={test}></Button>
+      </Container>
+      <Box className={classes.customerPanelFabsBox}>
+        <Fab
+          color="primary"
+          aria-label="test"
+          className={classes.customerPanelFab}
+          onClick={test}
         >
-          <div className={classes.customerPageStoreInfoSection}>
-            <Typography variant="h5">{store.storeName}</Typography>
-            <Typography variant="subtitle2">{store.moreInfo}</Typography>
-          </div>
-          <Divider />
-          <div className={classes.customerPageStoreMenuSection}>
-            {store.menu.map((item) => (
-              <Typography variant="body1">{"🥡 " + item}</Typography>
-            ))}
-          </div>
-        </Paper>
-      ))}
-      <Button onClick={test}></Button>
+          <Typography>test</Typography>
+        </Fab>
+      </Box>
       <Dialog open={isOrdering} onClose={() => { setIsOrdering(false) }}>
         <CustomerOrderPage
           isLoadingPair={props.isLoadingPair}
@@ -112,6 +144,6 @@ export default function CustomerPage(props) {
         >
         </CustomerOrderPage>
       </Dialog>
-    </Container>
+    </Box>
   )
 }
