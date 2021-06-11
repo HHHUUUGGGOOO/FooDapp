@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
+  storePanelStoreOrders: {
+    paddingTop: theme.spacing(3),
+  },
   storePanelPaper: {
     margin: theme.spacing(2),
     padding: theme.spacing(2),
@@ -100,6 +103,7 @@ export default function StorePanel(props) {
     console.log("loaded. StoreList: ", _myStoreIDList);
     if (!myStoresIDList.length) {
       console.log("there are no store at all.")
+      setIsLoading(false);
       return;
     }
     setIsLoading(false);
@@ -149,13 +153,14 @@ export default function StorePanel(props) {
       .send({ from: accounts[0], value: Web3.utils.toWei("0.001", "ether") })
       .on("receipt", function (receipt) {
         console.log("StoreSetStore receipt: ", receipt);
+        load_my_storeIDs();
+        setIsSavingChanges(false);
+        setIsEditingInfo(false);
       })
       .on("error", function (error) {
         alert(error);
+        setIsSavingChanges(false);
       })
-    await load_my_storeIDs();
-    setIsSavingChanges(false);
-    setIsEditingInfo(false);
   }
 
   const handleAddStore = () => {
@@ -185,7 +190,7 @@ export default function StorePanel(props) {
         <Container className={classes.StorePanelContainer}>
           <Typography variant="h2" className={classes.storePanelStoreTitle}>{"Orders for " + storeName}</Typography>
           <Divider />
-          <Grid container spacing={4}>
+          <Grid container spacing={4} className={classes.storePanelStoreOrders}>
             {storeOrderIDs.map((id, index) => (
               <Grid item key={id} xs={12} sm={6} md={4}>
                 <StoreSingleOrder
