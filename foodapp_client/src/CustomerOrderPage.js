@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CustomerOrderPage(props) {
     const classes = useStyles();
     const [isTakingOrder, setIsTakingOrder] = useState(false);
+    const [itemsNumber, setItemsNumber] = useState([]);
     const { isLoading, setIsLoading } = props.isLoadingPair;
     const { web3, accounts, contract } = props.web3States;
     const orderDetail = props.orderDetail;
@@ -45,6 +46,7 @@ export default function CustomerOrderPage(props) {
         setIsLoading(false);
     }
     const handleTakeOrder = async () => {
+        console.log(orderDetail);
         setIsTakingOrder(true);
         await load_order_basic_info_by_orderID();
         setIsTakingOrder(false);
@@ -69,7 +71,7 @@ export default function CustomerOrderPage(props) {
                     <Grid item xs={12} sm={3}>
                         {orderDetail[5].split("\n").map((dish) => (
                             <TextField
-                            onChange={(event) => { console.log(event); }}
+                            onChange={(event) => { console.log(event.target.value); }}
                             />
                         ))}
                         
