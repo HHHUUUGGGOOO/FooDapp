@@ -161,7 +161,7 @@ contract Store_Order is BaseData, ownable {
         require(msg.sender == orderIDToOrder[_orderID].deliverymanAddr, "Not the deliveyman of this order...");
         _;
     }  
-
+    // _orderID=0 if the order is new
     function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
         if (_orderID == uint(0)) {
             // need to pay ether
@@ -195,7 +195,6 @@ contract Store_Order is BaseData, ownable {
             
         }
         return _orderID;
-        
     }
 
     function SetOrderDelivering(uint _orderID) external payable {
