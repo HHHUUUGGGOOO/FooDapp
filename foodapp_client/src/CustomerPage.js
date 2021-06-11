@@ -1,5 +1,9 @@
-import { Container, Dialog, DialogContent, DialogTitle, Divider, makeStyles, Paper, Typography } from "@material-ui/core";
-import { useState } from "react";
+import {
+  Button, Container, Dialog, DialogContent, DialogTitle, Divider,
+  makeStyles, Paper, Typography, Box, CircularProgress, Grid
+} from "@material-ui/core";
+import React, { useEffect, useState } from 'react'
+import CustomerOrderPage from "./CustomerOrderPage";
 
 const useStyles = makeStyles((theme) => ({
   customerPageContainer: {
@@ -18,79 +22,69 @@ const useStyles = makeStyles((theme) => ({
   },
   customerPageStoreMenuSection: {
     margin: theme.spacing(1),
-  }
+  },
 }));
 
 export default function CustomerPage(props) {
   const classes = useStyles();
+  const { web3, accounts, contract } = props.web3States;
+
+  // const accounts = props.accounts
+  // const contract = props.constract
   const city = "Taipei";
   const [isOrdering, setIsOrdering] = useState(false);
-  const set_is_loading = props.setIsLoading;
-  const contract = props.web3States.contract;
+  const { isLoading, setIsLoading } = props.isLoadingPair;
   const [orderingStoreID, setOrderingStoreID] = useState(0);
   const [menuList, setMenuList] = useState([])
-  const [storeList, setStoreList] = useState([
-    {
-      storeID: 1,
-      storeName: "I'm Pasta",
-      moreInfo: "Free drink for NTU students!",
-      menu: [
-        "Spaghetti with chicken white sauce",
-        "Conchiglie with meat sauce"
-      ],
-      PeopleNumRateTheStar: {
-        1: 10,
-        2: 6,
-        3: 16,
-        4: 35,
-        5: 60
-      }
-    },
-    {
-      storeID: 2,
-      storeName: "Smile Kitchen",
-      moreInfo: "Free Soup, drinks, and ice cream!",
-      menu: [
-        "Spaghetti with chicken white sauce",
-        "Spaghetti with meat sauce"
-      ],
-      PeopleNumRateTheStar: {
-        1: 10,
-        2: 6,
-        3: 16,
-        4: 35,
-        5: 60
-      }
-    },
-    {
-      storeID: 3,
-      storeName: "Discovery",
-      moreInfo: "Free soup, and drink!",
-      menu: [
-        "Conchiglie with chicken white sauce",
-        "Conchiglie with meat sauce"
-      ],
-      PeopleNumRateTheStar: {
-        1: 10,
-        2: 6,
-        3: 16,
-        4: 35,
-        5: 60
-      }
-    }
-  ]);
+  const [storeList, setStoreList] = useState([]);
+  const [orderDetail, setOrderDetail] = useState([]);
+  const [ordertime, setOrderTime] = useState(''); 
+  
+  
+  const timeStamp = async () => {
+    const timestamp = Date.now();
+    const date = new Date(timestamp);
+    setOrderTime(date.toString());
+  }
 
-  const handleClickStore = (storeID) => {
+  const handleClickStore = async (storeID) => {
     setOrderingStoreID(storeID);
+    const detail = await contract.methods.StoreIDGetStoreDetail(storeID).call({ from: accounts[0] });
+    setOrderDetail(detail);
+    timeStamp();
     setIsOrdering(true);
   }
 
+  const loadStore = async () => {
+    let storesDetail = []
+    if (contract != null) {
+      let idArray = await contract.methods.ListAllStore().call({ from: accounts[0] })
+      for (let i = 0; i < idArray.length; i++) {
+        let detail = await contract.methods.StoreIDGetStoreDetail(idArray[i]).call({ from: accounts[0] });
+        console.log(detail);
+        storesDetail.push({
+          storeID: detail[0],
+          storeName: detail[2],
+          moreInfo: detail[4],
+          menu: detail[5].split("\n")
+        })
+      }
+      setStoreList(storesDetail);
+    }
+  }
+
+  useEffect(() => {
+    loadStore();
+  }, [contract])
+
+
+
   return (
     <Container className={classes.customerPageContainer}>
-      {storeList.map((store) => (
+      { storeList.map((store) => (
         <Paper
           className={classes.customerPageStorePaper}
-          onClick={()=>{handleClickStore(store.storeID)}}
+          onClick={() => { handleClickStore(store.storeID) }}
           key={store.storeID}
         >
           <div className={classes.customerPageStoreInfoSection}>
@@ -100,24 +94,20 @@ export default function CustomerPage(props) {
           <Divider />
           <div className={classes.customerPageStoreMenuSection}>
             {store.menu.map((item) => (
-              <Typography variant="body1">{"🥡 "+item}</Typography>
+              <Typography variant="body1">{"🥡 " + item}</Typography>
             ))}
           </div>
         </Paper>
       ))}
-      <Dialog open={isOrdering} onClose={()=>{setIsOrdering(false)}}>
-        <DialogTitle>orderingStoreID</DialogTitle>
-        {/* <DialogContent>
-        <TextField
-          required
-          id="storeName"
-          name="storeName"
-          label="Store Name"
-          defaultValue={myStore.storeName}
-          fullWidth
-          variant="outlined"
-        />
-        </DialogContent> */}
+      <Button onClick={loadStore}></Button>
+      <Dialog open={isOrdering} onClose={() => { setIsOrdering(false) }}>
+        <CustomerOrderPage
+          isLoadingPair={props.isLoadingPair}
+          web3States={props.web3States}
+          orderDetail={orderDetail}
+          orderTime={ordertime}
+        >
+        </CustomerOrderPage>
       </Dialog>
     </Container>
   )
