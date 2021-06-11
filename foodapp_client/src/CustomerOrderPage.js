@@ -31,23 +31,32 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function CustomerOrderPage(props) {
-    const classes = useStyles();
-    const [isTakingOrder, setIsTakingOrder] = useState(false);
     const { isLoading, setIsLoading } = props.isLoadingPair;
     const { web3, accounts, contract } = props.web3States;
     const orderDetail = props.orderDetail;
     const orderTime = props.orderTime;
+    const classes = useStyles();
+    const [isTakingOrder, setIsTakingOrder] = useState(false);
+    const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
+    const [tipValue, setTipValue] = useState(0);
     //test
     const load_order_basic_info_by_orderID = async () => {
-        setIsLoading(true);
-        console.log("loading order basic info...");
-        console.log("loaded.")
-        setIsLoading(false);
+        // setIsLoading(true);
+        // console.log("loading order basic info...");
+        // console.log("loaded.")
+        // setIsLoading(false);
     }
     const handleTakeOrder = async () => {
-        setIsTakingOrder(true);
-        await load_order_basic_info_by_orderID();
-        setIsTakingOrder(false);
+        // console.log(orderDetail);
+        // setIsTakingOrder(true);
+        // await load_order_basic_info_by_orderID();
+        // setIsTakingOrder(false);
+        const newPostID = 0;
+        console.log(newPostID);
+        console.log(Number(orderDetail[0]));
+        console.log(itemsNumber);
+        console.log(tipValue);
+        await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue).send({ from: accounts[0] });
     }
 
 
@@ -69,19 +78,26 @@ export default function CustomerOrderPage(props) {
                     <Grid item xs={12} sm={3}>
                         {orderDetail[5].split("\n").map((dish) => (
                             <TextField
-                            onChange={(event) => { console.log(event); }}
+                                onChange={(event) => {
+                                    // console.log(event.target.value);
+                                    const dishes = orderDetail[5].split("\n");
+                                    let itemsNumberChange = itemsNumber;
+                                    itemsNumberChange[dishes.indexOf(dish)] = Number(event.target.value);
+                                    // console.log(itemsNumberChange);
+                                    setItemsNumber(itemsNumberChange);
+                                }}
                             />
                         ))}
-                        
+
                     </Grid>
                 </Grid>
             </Box>
             <Divider />
             <Box className={classes.DeliverymanOrderFooterBox}>
-                <Typography variant="h5">Tips: $ 
-                            {<TextField
-                            onChange={(event) => { console.log(event); }}
-                            />}
+                <Typography variant="h5">Tips: $
+                        {<TextField
+                            onChange={(event) => { setTipValue(Number(event.target.value)); }}
+                        />}
                 </Typography>
                 <Box className={classes.DeliverymanOrderButtonWrapper}>
                     <Button

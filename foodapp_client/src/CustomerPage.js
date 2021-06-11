@@ -54,7 +54,10 @@ export default function CustomerPage(props) {
     timeStamp();
     setIsOrdering(true);
   }
-
+  const test = async () => {
+    const order = await contract.methods.GetAllOrderInformation().call({ from: accounts[0] })
+    console.log(order);
+  }
   const loadStore = async () => {
     let storesDetail = []
     if (contract != null) {
@@ -99,7 +102,7 @@ export default function CustomerPage(props) {
           </div>
         </Paper>
       ))}
-      <Button onClick={loadStore}></Button>
+      <Button onClick={test}></Button>
       <Dialog open={isOrdering} onClose={() => { setIsOrdering(false) }}>
         <CustomerOrderPage
           isLoadingPair={props.isLoadingPair}

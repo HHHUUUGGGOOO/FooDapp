@@ -100,7 +100,7 @@ contract Store_Order is BaseData, ownable {
     /* ---------------------------------------- Order ---------------------------------------- */
 
     // declare new order event
-    event NewOrderBasic(uint setTime, uint orderID, uint storeID, uint[] itemsID, uint[] itemsNumber, uint tips);
+    event NewOrderBasic(uint setTime, uint orderID, uint storeID, uint[] itemsNumber, uint tips);
     event NewOrderScore(uint d_score, uint u_score, uint s_score);
     event NewOrderBoolandAddr(bool isConfirmed, bool isDelivering, bool isDelivered, bool isReceived, address userAddr, address deliveryAddr);
     // declare other event
@@ -121,14 +121,13 @@ contract Store_Order is BaseData, ownable {
         return AllOrderList;
     }
 
-    function OrderIDGetOrderBasicInfo(uint _orderID) public view returns(uint, uint, uint, uint[] memory, uint[] memory, uint) {
+    function OrderIDGetOrderBasicInfo(uint _orderID) public view returns(uint, uint, uint, uint[] memory, uint) {
         // return 
         uint            _setTime                = orderIDToOrder[_orderID].setTime;               
-        uint            _storeID                = orderIDToOrder[_orderID].storeID;                 
-        uint[] memory   _itemsID                = orderIDToOrder[_orderID].itemsID;                 
+        uint            _storeID                = orderIDToOrder[_orderID].storeID;                                  
         uint[] memory   _itemsNumber            = orderIDToOrder[_orderID].itemsNumber;
         uint            _tipsValueMultiplicand  = orderIDToOrder[_orderID].tipsValueMultiplicand;
-        return (_setTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
+        return (_setTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand);
     }
 
     function OrderIDGetOrderScore(uint _orderID) public view returns(uint, uint, uint) {
@@ -162,7 +161,7 @@ contract Store_Order is BaseData, ownable {
         _;
     }  
 
-    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
+    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
         if (_orderID == uint(0)) {
             // need to pay ether
             // require(msg.value == _setOrderFee, "Not enough ether to post order...");
@@ -170,7 +169,7 @@ contract Store_Order is BaseData, ownable {
             uint _updateTime = now;
             orderid++;
             _orderID = orderid;
-            Order memory newOrder = Order(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, 0, false, false, false, false, msg.sender, address(0));
+            Order memory newOrder = Order(_updateTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand, 0, 0, 0, false, false, false, false, msg.sender, address(0));
             // add a new order into the public set
             AllOrderList.push(_orderID);
             userAddrToOrderID[msg.sender].push(_orderID);
@@ -179,7 +178,7 @@ contract Store_Order is BaseData, ownable {
             // mapping orderID to order
             orderIDToOrder[_orderID] = newOrder;
             // fire event
-            emit NewOrderBasic(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
+            emit NewOrderBasic(_updateTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand);
             emit NewOrderScore(0, 0, 0);
             emit NewOrderBoolandAddr(false, false, false, false, msg.sender, address(0));
             
@@ -188,15 +187,13 @@ contract Store_Order is BaseData, ownable {
             require(msg.sender == orderIDToOrder[_orderID].userAddr, "Not the owner of this order...");
             orderIDToOrder[_orderID].setTime = now;
             orderIDToOrder[_orderID].storeID = _storeID;
-            orderIDToOrder[_orderID].itemsID = _itemsID;
             orderIDToOrder[_orderID].itemsNumber = _itemsNumber;
             orderIDToOrder[_orderID].tipsValueMultiplicand = _tipsValueMultiplicand;
             // fire new order event
-            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
+            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand);
             
         }
         return _orderID;
-        
     }
 
     function UserAddrGetOrder() public view returns(uint[] memory) {

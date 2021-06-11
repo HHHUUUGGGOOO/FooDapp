@@ -17,7 +17,6 @@ contract BaseData{
         uint      setTime;
         uint      orderID;                 // Will be recycled if over 2^64
         uint      storeID;                 // Will be recycled if over 2^64
-        uint[]    itemsID;                 // Expect a store only has 65536 items available
         uint[]    itemsNumber;
         uint      tipsValueMultiplicand;   // That is, their are only 65536 number of tip available
         uint      userToDeliverymanScore;                   
