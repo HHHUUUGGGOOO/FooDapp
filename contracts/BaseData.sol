@@ -37,6 +37,8 @@ contract BaseData{
     mapping (string => uint[])                   public cityNameToStoreList;  // => Store[] is not supported (struct dynamic array) --> => uint[]
     mapping (uint => mapping (uint => uint))     public PeopleNumRateTheStar; // storeID to its rate, e.g. 1 star: 20 people, ..., 5 star: 1 people
     mapping (address => uint[])                  public ownerAddrToStoreID;
+    mapping (address => uint[])                  public userAddrToOrderID;
+    mapping (address => uint[])                  public deliverymanAddrToOrderID;
     
     uint[] public AllOrderList;   // Order[] --> uint[]  
     uint[] public AllStoreList;

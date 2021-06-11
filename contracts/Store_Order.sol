@@ -173,6 +173,7 @@ contract Store_Order is BaseData, ownable {
             Order memory newOrder = Order(_updateTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand, 0, 0, 0, false, false, false, false, msg.sender, address(0));
             // add a new order into the public set
             AllOrderList.push(_orderID);
+            userAddrToOrderID[msg.sender].push(_orderID);
             // add a new order to the store
             storeIDToOrder[_storeID].push(_orderID);
             // mapping orderID to order
@@ -198,11 +199,22 @@ contract Store_Order is BaseData, ownable {
         
     }
 
+    function UserAddrGetOrder() public view returns(uint[] memory) {
+        // return orderID[]
+        return userAddrToOrderID[msg.sender];
+    }
+
+    function DeliverymanAddrGetOrder() public view returns(uint[] memory) {
+        // return orderID[]
+        return deliverymanAddrToOrderID[msg.sender];
+    }
+
     function SetOrderDelivering(uint _orderID) external payable {
         // need to pay ether
         // require(msg.value == _setDeliveryFee, "Not enough ether to deliver this order...");
         // return orderID
         orderIDToOrder[_orderID].deliverymanAddr = msg.sender;
+        deliverymanAddrToOrderID[msg.sender].push(_orderID);
         orderIDToOrder[_orderID].isDelivering = true;
         // fire event
         emit OrderDelivering(_orderID);
