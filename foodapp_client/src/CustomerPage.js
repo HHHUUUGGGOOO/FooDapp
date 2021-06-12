@@ -82,7 +82,7 @@ export default function CustomerPage(props) {
       let idArray = await contract.methods.ListAllStore().call({ from: accounts[0] })
       for (let i = 0; i < idArray.length; i++) {
         let detail = await contract.methods.StoreIDGetStoreDetail(idArray[i]).call({ from: accounts[0] });
-        console.log(detail);
+        // console.log(detail);
         storesDetail.push({
           storeID: detail[0],
           storeName: detail[2],

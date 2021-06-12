@@ -46,23 +46,15 @@ export default function CustomerOrderPage(props) {
     const [isTakingOrder, setIsTakingOrder] = useState(false);
     const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
     const [tipValue, setTipValue] = useState(0);
-    //test
-    const load_order_basic_info_by_orderID = async () => {
-        // setIsLoading(true);
-        // console.log("loading order basic info...");
-        // console.log("loaded.")
-        // setIsLoading(false);
-    }
+       
+    const isZero = (number) => number===0 
+
     const handleTakeOrder = async () => {
-        // console.log(orderDetail);
-        // setIsTakingOrder(true);
-        // await load_order_basic_info_by_orderID();
-        // setIsTakingOrder(false);
         const newPostID = 0;
-        console.log(newPostID);
-        console.log(Number(orderDetail[0]));
-        console.log(itemsNumber);
-        console.log(tipValue);
+        if (itemsNumber.every(isZero)){
+            alert("Please Order Something")
+            return;
+        }
         await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue).send({ from: accounts[0] });
     }
 
@@ -90,7 +82,6 @@ export default function CustomerOrderPage(props) {
                                         itemsNumberChange[dish_index] = Number(event.target.value);
                                     }
                                     else{
-                                        console.log('qq');
                                         itemsNumberChange[dish_index] = Number(0);
                                     }
                                     console.log(itemsNumberChange);
