@@ -62,7 +62,7 @@ export default function DeliverymanSingleOrder(props) {
   
   const load_order_basic_info_by_orderID = async () => {
     setIsLoading(true);
-    
+
     if ((orderDetails === undefined)||(storeDetails === undefined)||orderCondition === undefined) return;
     setSetTime(Date(orderDetails[0]));
     setOrderID(orderDetails[1]);
@@ -74,7 +74,6 @@ export default function DeliverymanSingleOrder(props) {
     setMenuArray(storeDetails[5].split("\n"));
 
     setisConfirmed(orderCondition[0]);
-    console.log(orderCondition[1]);
     setisDelivering(orderCondition[1]);
     setisDelivered(orderCondition[2]);
     setisReceived(orderCondition[3]);
@@ -90,12 +89,7 @@ export default function DeliverymanSingleOrder(props) {
 
   const handleTakeOrder = async () => {
     await contract.methods.SetOrderDelivering(orderID).send({ from: accounts[0] });
-    // setisConfirmed(orderCondition[0]);
     setisDelivering(true);
-    // setisDelivered(orderCondition[2]);
-    // setisReceived(orderCondition[3]);
-    // setuserAddr(orderCondition[4]);
-    // setdeliverymanAddr(orderCondition[5]);
   }
 
   return (

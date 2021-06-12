@@ -33,7 +33,7 @@ export default function DeliverymanPanel(props) {
       orderList.push(orderDetail);
       const storeDetail = await contract.methods.StoreIDGetStoreDetail(orderDetail[2]).call({ from: accounts[0] });
       storeList.push(storeDetail);
-      const orderInfo = await contract.methods.OrderIDGetOrderConditionAndOwner(orderDetail[2]).call({ from: accounts[0] });
+      const orderInfo = await contract.methods.OrderIDGetOrderConditionAndOwner(AllOrderList[i]).call({ from: accounts[0] });
       orderInfoList.push(orderInfo);
     }
     setOrderDetailsList(orderList);
