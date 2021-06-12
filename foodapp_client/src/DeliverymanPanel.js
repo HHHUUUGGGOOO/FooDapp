@@ -17,6 +17,7 @@ export default function DeliverymanPanel(props) {
   const [orderIDsList, setOrderIDsList] = useState([]);
   const [orderDetailsList, setOrderDetailsList] = useState([]);
   const [storeDetailsList, setStoreDetailsList] = useState([]);
+  const [orderConditionList, setOrderConditionList] = useState([]);
   // const orderIDsList = [1,2,3,4]
 
   const load_available_orderIDs = async () => {
@@ -26,15 +27,19 @@ export default function DeliverymanPanel(props) {
     setOrderIDsList(AllOrderList);
     let orderList = [];
     let storeList = [];
+    let orderInfoList = [];
     for (let i=0;i<AllOrderList.length;i++){
       const orderDetail = await contract.methods.OrderIDGetOrderBasicInfo(AllOrderList[i]).call({ from: accounts[0] });
-      console.log(orderDetail);
       orderList.push(orderDetail);
       const storeDetail = await contract.methods.StoreIDGetStoreDetail(orderDetail[2]).call({ from: accounts[0] });
       storeList.push(storeDetail);
+      const orderInfo = await contract.methods.OrderIDGetOrderConditionAndOwner(orderDetail[2]).call({ from: accounts[0] });
+      orderInfoList.push(orderInfo);
     }
     setOrderDetailsList(orderList);
-    setStoreDetailsList(storeList)
+    setStoreDetailsList(storeList);
+    setOrderConditionList(orderInfoList);
+    console.log(orderInfoList);
   }
 
   useEffect(() => {
@@ -52,6 +57,7 @@ export default function DeliverymanPanel(props) {
               web3States={props.web3States}
               orderDetails={orderDetailsList[index]}
               storeDetails={storeDetailsList[index]}
+              orderCondition={orderConditionList[index]}
             />
           </Grid>
         ))}

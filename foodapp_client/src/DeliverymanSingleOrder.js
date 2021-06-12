@@ -37,21 +37,33 @@ export default function DeliverymanSingleOrder(props) {
   const { web3, accounts, contract } = props.web3States;
   const orderDetails = props.orderDetails;
   const storeDetails = props.storeDetails;
+  const orderCondition = props.orderCondition;
 
   const [isTakingOrder, setIsTakingOrder] = useState(false);
 
   const [storeName, setStoreName] = useState("");
   const [cityName, setCityName] = useState("");
   const [setTime, setSetTime] = useState(0);
-  const [orderID, setOrderID] = useState(0)
+  const [orderID, setOrderID] = useState(0);
   const [storeID, setStoreID] = useState(0);
   const [itemsNumber, setItemsNumber] = useState([]);
-  const [menuArray, setMenuArray] = useState([])
+  const [menuArray, setMenuArray] = useState([]);
   const [tipMulti, setTipMulti] = useState(4);
 
+  const [isConfirmed, setisConfirmed] = useState(false);
+  const [isDelivering, setisDelivering] = useState(false);
+  const [isDelivered, setisDelivered] = useState(false);
+  const [isReceived, setisReceived] = useState(false);
+  const [userAddr, setuserAddr] = useState(0);
+  const [deliverymanAddr, setdeliverymanAddr] = useState(0);
+
+
+
+  
   const load_order_basic_info_by_orderID = async () => {
     setIsLoading(true);
-    if ((orderDetails === undefined)||(storeDetails === undefined)) return;
+    
+    if ((orderDetails === undefined)||(storeDetails === undefined)||orderCondition === undefined) return;
     setSetTime(Date(orderDetails[0]));
     setOrderID(orderDetails[1]);
     setStoreID(orderDetails[2]);
@@ -60,17 +72,30 @@ export default function DeliverymanSingleOrder(props) {
     setStoreName(storeDetails[2]);
     setCityName(storeDetails[3]);
     setMenuArray(storeDetails[5].split("\n"));
+
+    setisConfirmed(orderCondition[0]);
+    console.log(orderCondition[1]);
+    setisDelivering(orderCondition[1]);
+    setisDelivered(orderCondition[2]);
+    setisReceived(orderCondition[3]);
+    setuserAddr(orderCondition[4]);
+    setdeliverymanAddr(orderCondition[5]);
+
     setIsLoading(false);
   }
 
   useEffect(() => {
     load_order_basic_info_by_orderID();
-  }, [orderDetails, storeDetails])
+  }, [orderDetails, storeDetails, orderCondition])
 
   const handleTakeOrder = async () => {
-    setIsTakingOrder(true);
-    // await load_order_basic_info_by_orderID();
-    setIsTakingOrder(false);
+    await contract.methods.SetOrderDelivering(orderID).send({ from: accounts[0] });
+    // setisConfirmed(orderCondition[0]);
+    setisDelivering(true);
+    // setisDelivered(orderCondition[2]);
+    // setisReceived(orderCondition[3]);
+    // setuserAddr(orderCondition[4]);
+    // setdeliverymanAddr(orderCondition[5]);
   }
 
   return (
@@ -103,11 +128,11 @@ export default function DeliverymanSingleOrder(props) {
             variant="contained"
             color='primary'
             onClick={handleTakeOrder}
-            disabled={isTakingOrder}
+            disabled={isDelivering}
           >
             Take This !
             </Button>
-          {isTakingOrder && <CircularProgress size={24} className={classes.DeliverymanOrderButtonProgress} />}
+          {/* {isDelivering && <CircularProgress size={24} className={classes.DeliverymanOrderButtonProgress} />} */}
         </Box>
       </Box>
     </Paper>
