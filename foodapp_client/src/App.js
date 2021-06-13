@@ -8,12 +8,12 @@ import SearchIcon from '@material-ui/icons/Search'
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 
 import CustomerPage from './CustomerPage';
-import StorePanel from './StorePanel';
+import DeliverymanPanel from './DeliverymanPanel';
+import StorePanel from './StorePanel2';
 
 import FooDappContract from './build/contracts/Store_Order.json'
 
 import getWeb3 from './utils/getWeb3';
-import DeliverymanPanel from './DeliverymanPanel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
 
     display: 'flex',
     flexDirection: 'column',    // flexDirection: 現在是由上到下排列
-    justifyContent: 'center',   // justifyContent: 在flex方向上的排列
+    // justifyContent: 'center',   // justifyContent: 在flex方向上的排列
     alignItems: 'center',       // alignItems: 子物件在格子中的位置
     height: '100vh',
   },
