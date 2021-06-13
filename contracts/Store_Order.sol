@@ -14,7 +14,7 @@ contract Store_Order is BaseData, ownable {
     /* ---------------------------------------- Store ---------------------------------------- */
 
     // declare event
-    event NewStore(uint storeID, address ownerAddress, string storeName, string cityName, string moreInfo, string menu);
+    event NewStore(uint storeID, address ownerAddress, string storeName, string cityName, string moreInfo, string menu, uint[] itemsPrice);
     event OrderConfirmed(uint orderID);
 
     uint _idDigit        = 64;
@@ -44,17 +44,18 @@ contract Store_Order is BaseData, ownable {
         return ownerAddrToStoreID[msg.sender];
     }
 
-    function StoreIDGetStoreDetail(uint _storeID) public view returns(uint, address, string memory, string memory, string memory, string memory) {
+    function StoreIDGetStoreDetail(uint _storeID) public view returns(uint, address, string memory, string memory, string memory, string memory, uint[] memory) {
         // return 
         address       _ownerAddress = storeIDToStore[_storeID].ownerAddress;
         string memory _storeName    = storeIDToStore[_storeID].storeName;
         string memory _cityName     = storeIDToStore[_storeID].cityName;
         string memory _moreInfo     = storeIDToStore[_storeID].moreInfo;
         string memory _menu         = storeIDToStore[_storeID].menu;
-        return (_storeID, _ownerAddress, _storeName, _cityName, _moreInfo, _menu);
+        uint[] memory _itemsPrice        = storeIDToStore[_storeID].itemsPrice;
+        return (_storeID, _ownerAddress, _storeName, _cityName, _moreInfo, _menu, _itemsPrice);
     }
 
-    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu) external payable returns(uint) {      
+    function StoreSetStore(uint _storeID, string calldata _storeName, string calldata _cityName, string calldata _moreInfo, string calldata _menu, uint[] calldata _itemsPrice) external payable returns(uint) {      
         if (_storeID == uint(0)){
             // need to pay ether
             // require(msg.value == 0.001 ether, "Not enough ether to set store...");
@@ -65,7 +66,7 @@ contract Store_Order is BaseData, ownable {
             for (uint i = 1 ; i != 6 ; i++) {
                 PeopleNumRateTheStar[_storeID][i] = 0;
             }
-            Store memory newStore = Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            Store memory newStore = Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, _itemsPrice);
             // add a new store into the public set
             cityNameToStoreList[_cityName].push(_storeID);
             AllStoreList.push(_storeID);
@@ -73,7 +74,7 @@ contract Store_Order is BaseData, ownable {
             storeIDToStore[_storeID] = newStore;
             ownerAddrToStoreID[msg.sender].push(_storeID);
             // fire event
-            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, _itemsPrice);
             
         } else if (_storeID > uint(0)) {
             // if want to modify
@@ -82,8 +83,9 @@ contract Store_Order is BaseData, ownable {
             storeIDToStore[_storeID].cityName = _cityName;
             storeIDToStore[_storeID].moreInfo = _moreInfo;
             storeIDToStore[_storeID].menu = _menu;
+            storeIDToStore[_storeID].itemsPrice = _itemsPrice;
             // fire event
-            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
+            emit NewStore(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu, _itemsPrice);
             
         }
         return _storeID;
@@ -190,7 +192,7 @@ contract Store_Order is BaseData, ownable {
             orderIDToOrder[_orderID].itemsNumber = _itemsNumber;
             orderIDToOrder[_orderID].tipsValueMultiplicand = _tipsValueMultiplicand;
             // fire new order event
-            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsID, _itemsNumber, _tipsValueMultiplicand);
+            emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand);
             
         }
         return _orderID;

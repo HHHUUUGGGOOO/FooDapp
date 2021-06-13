@@ -9,7 +9,8 @@ contract BaseData{
         string              storeName;     // array, struct, string parameters in a function need to be stored in "memory"
         string              cityName;
         string              moreInfo;
-        string              menu;       
+        string              menu;   
+        uint[]              itemsPrice;    
     }
     
     // We can assign the limited 16 variables
@@ -21,9 +22,9 @@ contract BaseData{
         uint      tipsValueMultiplicand;   // That is, their are only 65536 number of tip available
         uint      userToDeliverymanScore;                   
         uint      deliverymanToUserScore;
-        uint      userToStoreScore;
-        bool      isConfirmed;
-        bool      isDelivering;
+        uint      useonfirmed;
+        bool      isDrToStoreScore;
+        bool      isCelivering;
         bool      isDelivered;
         bool      isReceived;
         address   userAddr;
