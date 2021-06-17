@@ -127,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
     // justifyContent: 'center',   // justifyContent: 在flex方向上的排列
     alignItems: 'center',       // alignItems: 子物件在格子中的位置
     height: '100vh',
+    overflow: 'scroll',
   },
   page: {
     display: 'flex',
