@@ -1,7 +1,8 @@
 import {
   Box, Button, CircularProgress, Divider, Grid,
-  makeStyles, Paper, Typography
+  makeStyles, Paper, Dialog, Typography
 } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,11 +27,9 @@ const useStyles = makeStyles((theme) => ({
     // justifyContent: 'space-between',
     justifyContent: 'flex-end'
   },
-  orderButtonsBox: {
-    
-  },
   orderButtonWrapper: {
     position: 'relative',
+    marginLeft: theme.spacing(1),
   },
   orderButtonProgress: {
     position: 'absolute',
@@ -39,6 +38,20 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
+  rateBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(5),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rateRowBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: theme.spacing(1),
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 }))
 
 export default function SingleOrder(props) {
@@ -64,8 +77,13 @@ export default function SingleOrder(props) {
   const [isDelivering   , setIsDelivering   ] = useState(false);
   const [isDelivered    , setIsDelivered    ] = useState(false);
   const [isReceived     , setIsReceived     ] = useState(false);
-  const [userAddr       , setUserAddr       ] = useState("")
-  const [deliverymanAddr, setDeliverymanAddr] = useState("")
+  const [userAddr       , setUserAddr       ] = useState("");
+  const [deliverymanAddr, setDeliverymanAddr] = useState("");
+
+  const [isToRate, setIsToRate] = useState(false);
+  const [userRate, setUserRate] = useState(0);
+  const [deliRate, setDeliRate] = useState(0);
+  const [storRate, setStorRate] = useState(0);
 
   const [passedTime, setPassedTime] = useState("");
 
@@ -143,6 +161,11 @@ export default function SingleOrder(props) {
       load_order_by_orderID();
   }
 
+  const handleRate = async () => {
+    console.log("please handle it")
+    setIsToRate(true);
+  }
+
   return (
     <Paper className={classes.orderPaper}>
       <Box className={classes.orderTitle}>
@@ -176,36 +199,73 @@ export default function SingleOrder(props) {
         }</Typography>
       </Box>
       <Box className={classes.orderFooterBox}>
-        <Box>
-          {parentIs === 'Store' && (
-            <Box className={classes.orderButtonWrapper}>
-              <Button
-                variant="contained"
-                color='primary'
-                onClick={handleConfirm}
-                disabled={isConfirming || isConfirmed}
-              >
-                Confirm
-              </Button>
-              {isConfirming && <CircularProgress size={24} className={classes.orderButtonProgress} />}
-            </Box>
-          )}
-          {parentIs === 'Deliveryman' && (
-            <Box className={classes.orderButtonWrapper}>
-              <Button
-                variant="contained"
-                color='primary'
-                onClick={handleTakeOrder}
-                disabled={isDelivering}
-              >
-                Take Order
-              </Button>
-              {isTakingOrder && <CircularProgress size={24} className={classes.orderButtonProgress} />}
-            </Box>
-          )}
-
-        </Box>
+        {parentIs === 'Store' && (
+          <Box className={classes.orderButtonWrapper}>
+            <Button
+              variant="contained"
+              color='primary'
+              onClick={handleConfirm}
+              disabled={isConfirming || isConfirmed}
+            >
+              Confirm
+            </Button>
+            {isConfirming && <CircularProgress size={24} className={classes.orderButtonProgress} />}
+          </Box>
+        )}
+        {parentIs === 'Deliveryman' && (
+          <Box className={classes.orderButtonWrapper}>
+            <Button
+              variant="contained"
+              color='primary'
+              onClick={handleTakeOrder}
+              disabled={isTakingOrder || isDelivering}
+            >
+              Take Order
+            </Button>
+            {isTakingOrder && <CircularProgress size={24} className={classes.orderButtonProgress} />}
+          </Box>
+        )}
+        {(parentIs === 'Deliveryman' || parentIs === "Customer") && (
+          <Box className={classes.orderButtonWrapper}>
+            <Button
+              variant="contained"
+              color='primary'
+              onClick={handleRate}
+              disabled={isToRate}
+            >
+              Rate
+            </Button>
+            {isToRate && <CircularProgress size={24} className={classes.orderButtonProgress} />}
+          </Box>
+        )}
       </Box>
+      <Dialog open={isToRate} onClose={() => {setIsToRate(false)}}>
+        <Box className={classes.rateBox}>
+          {(parentIs !== "Customer") && (
+            <Box className={classes.rateRowBox} >
+              <Typography>Rate Customer: </Typography>
+              <Rating name="user rate" value={userRate} onChange={(event, newValue) => {
+                setUserRate(newValue)}} />
+            </Box>
+          )}
+          {(parentIs !== "Deliveryman") && (
+            <Box className={classes.rateRowBox} >
+              <Typography>Rate Deliveryman: </Typography>
+              <Rating name="deliveryman rate" value={deliRate} onChange={(event, newValue) => {
+                setDeliRate(newValue);
+                console.log(newValue);
+              }} />
+            </Box>
+          )}
+          {(parentIs !== "Store") && (
+            <Box className={classes.rateRowBox} >
+            <Typography>Rate Store: </Typography>
+            <Rating name="store rate" value={storRate} onChange={(event, newValue) => {
+              setStorRate(newValue)}} />
+          </Box>
+          )}
+        </Box>
+      </Dialog>
     </Paper>
   )
 }

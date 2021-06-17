@@ -90,7 +90,7 @@ export default function DeliverymanPanel(props) {
     <Box className={classes.deliverymanPanelBox}>
       <Container className={classes.deliverymanPanelContainer}>
         <Typography variant="h2" className={classes.deliverymanPanelTitle}>
-          {accounts[0]}
+          { accounts === null ? ("Loading..."):(accounts[0])}
         </Typography>
         <RateWideBar />
         <Divider />
