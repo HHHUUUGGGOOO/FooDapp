@@ -10,7 +10,7 @@ import {
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 
-import StoreSingleOrder from "./StoreSingleOrder";
+import SingleOrder from "./SingleOrder";
 
 const useStyles = makeStyles((theme) => ({
   storePanelBox: {
@@ -193,11 +193,12 @@ export default function StorePanel(props) {
           <Grid container spacing={4} className={classes.storePanelStoreOrders}>
             {storeOrderIDs.map((id, index) => (
               <Grid item key={id} xs={12} sm={6} md={4}>
-                <StoreSingleOrder
+                <SingleOrder
                   orderID={id}
                   isLoadingPair={props.isLoadingPair}
                   web3States={props.web3States}
                   menuString={menuString}
+                  parentIs="Store"
                 />
               </Grid>
             ))}

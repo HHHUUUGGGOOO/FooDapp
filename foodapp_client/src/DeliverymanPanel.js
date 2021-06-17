@@ -1,9 +1,8 @@
 import {
   Box, Container, Fab, Grid, makeStyles
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add"
 import { useState, useEffect } from "react";
-import DeliverymanSingleOrder from "./DeliverymanSingleOrder";
+import SingleOrder from "./SingleOrder";
 
 const useStyles = makeStyles((theme) => ({
   DeliverymanPanelContainer: {
@@ -51,13 +50,19 @@ export default function DeliverymanPanel(props) {
       <Grid container spacing={4}>
         {orderIDsList.map((id, index) => (
           <Grid item key={id} xs={12} sm={6} md={4}>
-            <DeliverymanSingleOrder
+            {/* <DeliverymanSingleOrder
               orderID={id}
               isLoadingPair={props.isLoadingPair}
               web3States={props.web3States}
               orderDetails={orderDetailsList[index]}
               storeDetails={storeDetailsList[index]}
               orderCondition={orderConditionList[index]}
+            /> */}
+            <SingleOrder
+              orderID={id}
+              isLoadingPair={props.isLoadingPair}
+              web3States={props.web3States}
+              parentIs="Deliveryman"
             />
           </Grid>
         ))}
