@@ -9,6 +9,7 @@ import {
 
 import { useState, useEffect } from "react";
 import Web3 from "web3";
+import { RateWideBar } from "./Rate";
 
 import SingleOrder from "./SingleOrder";
 
@@ -189,6 +190,7 @@ export default function StorePanel(props) {
       {myStoresIDList.length && (
         <Container className={classes.StorePanelContainer}>
           <Typography variant="h2" className={classes.storePanelStoreTitle}>{"Orders for " + storeName}</Typography>
+          <RateWideBar />
           <Divider />
           <Grid container spacing={4} className={classes.storePanelStoreOrders}>
             {storeOrderIDs.map((id, index) => (

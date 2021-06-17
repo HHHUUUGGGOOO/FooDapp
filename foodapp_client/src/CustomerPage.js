@@ -2,44 +2,54 @@ import {
   Button, Container, Dialog, DialogContent, DialogTitle, Divider,
   makeStyles, Paper, Typography, Box, CircularProgress, Grid, Fab
 } from "@material-ui/core";
+import { ShoppingCart } from "@material-ui/icons";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
+import { RateWideBar } from "./Rate";
+import SingleOrder from "./SingleOrder";
 
 const useStyles = makeStyles((theme) => ({
-  customerPanelBox:{
+  panelBox:{
     display: 'flex',
     width: '100vw',
     margin: theme.spacing(1),
   },
-  customerPanelFabsBox: {
+  fabsBox: {
     position: 'absolute',
     right: theme.spacing(3),
     bottom: theme.spacing(3),
     display: 'flex',
     flexDirection: 'column',
   },
-  customerPanelFab: {
+  fab: {
     marginTop: theme.spacing(1),
   },
-  customerPageContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    paddingTop: theme.spacing(3),
+  panelContainer: {
+    // display: 'flex',
+    // flexDirection: 'row',
+    // paddingTop: theme.spacing(3),
   },
-  customerPageStorePaper: {
+  customerPanelStorePaper: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
     height: '100%',
-    // margin: theme.spacing(1),
-    // padding: theme.spacing(1),
   },
-  customerPageStoreInfoSection: {
+  customerPanelStoreInfoSection: {
     padding: theme.spacing(2),
     paddingBottom: theme.spacing(0),
   },
-  customerPageStoreMenuSection: {
+  customerPanelStoreMenuSection: {
     margin: theme.spacing(2),
+  },
+  panelTitle: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(0),
+    overflow: 'hidden',
+  },
+  panelOrders: {
+    paddingTop: theme.spacing(3),
   },
 }));
 
@@ -57,6 +67,8 @@ export default function CustomerPage(props) {
   const [storeList, setStoreList] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
   const [ordertime, setOrderTime] = useState(''); 
+  const [isOpenCart, setIsOpenCart] = useState(false);
+  const orderIDsList = [0, 1];
   
   
   const timeStamp = async () => {
@@ -99,40 +111,69 @@ export default function CustomerPage(props) {
   }, [contract])
 
   return (
-    <Box className={classes.customerPanelBox}>
-      <Container className={classes.customerPageContainer}>
-        <Grid container spacing={4}>
-          { storeList.map((store, index) => (
-            <Grid item key={index} xs={12} sm={6} md={4}>
-              <Paper
-                className={classes.customerPageStorePaper}
-                onClick={() => { handleClickStore(store.storeID) }}
-                key={store.storeID}
-              >
-                <Box className={classes.customerPageStoreInfoSection}>
-                  <Typography variant="h4">{store.storeName}</Typography>
-                  <Typography variant="subtitle2">{store.moreInfo}</Typography>
-                </Box>
-                <Divider />
-                <Box className={classes.customerPageStoreMenuSection}>
-                  {store.menu.map((item) => (
-                    <Typography variant="body1">{"🥡 " + item}</Typography>
-                  ))}
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-        <Button onClick={test}></Button>
-      </Container>
-      <Box className={classes.customerPanelFabsBox}>
+    <Box className={classes.panelBox}>
+      {!isOpenCart? (
+        <Container className={classes.panelContainer}>
+          <Grid container spacing={4}>
+            { storeList.map((store, index) => (
+              <Grid item key={index} xs={12} sm={6} md={4}>
+                <Paper
+                  className={classes.customerPanelStorePaper}
+                  onClick={() => { handleClickStore(store.storeID) }}
+                  key={store.storeID}
+                >
+                  <Box className={classes.customerPanelStoreInfoSection}>
+                    <Typography variant="h4">{store.storeName}</Typography>
+                    <Typography variant="subtitle2">{store.moreInfo}</Typography>
+                  </Box>
+                  <Divider />
+                  <Box className={classes.customerPanelStoreMenuSection}>
+                    {store.menu.map((item) => (
+                      <Typography variant="body1">{"🥡 " + item}</Typography>
+                    ))}
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      ):(
+        <Container className={classes.panelContainer}>
+          <Typography variant="h2" className={classes.panelTitle}>
+            {accounts[0]}
+          </Typography>
+          <RateWideBar />
+          <Divider />
+          <Grid container spacing={4} className={classes.panelOrders}>
+            {orderIDsList.map((id, index) => (
+              <Grid item key={id} xs={12} sm={6} md={4}>
+                <SingleOrder
+                  orderID={id}
+                  isLoadingPair={props.isLoadingPair}
+                  web3States={props.web3States}
+                  parentIs="Customer"
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      )}
+      <Box className={classes.fabsBox}>
         <Fab
           color="primary"
           aria-label="test"
-          className={classes.customerPanelFab}
+          className={classes.fab}
           onClick={test}
         >
           <Typography>test</Typography>
+        </Fab>
+        <Fab
+          color="primary"
+          aria-label="check cart"
+          className={classes.fab}
+          onClick={() => {setIsOpenCart(!isOpenCart)}}
+        >
+          <ShoppingCart />
         </Fab>
       </Box>
       <Dialog open={isOrdering} onClose={() => { setIsOrdering(false) }}>

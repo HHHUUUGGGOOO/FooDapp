@@ -1,11 +1,51 @@
 import {
-  Box, Container, Fab, Grid, makeStyles
+  Box, Container, Fab, Grid, Typography, 
+  Divider, makeStyles
 } from "@material-ui/core";
+import { ShoppingCart } from "@material-ui/icons";
 import { useState, useEffect } from "react";
 import SingleOrder from "./SingleOrder";
+import { RateWideBar } from "./Rate";
 
 const useStyles = makeStyles((theme) => ({
-  DeliverymanPanelContainer: {
+  deliverymanPanelBox: {
+    display: 'flex',
+    width: '100vw',
+    margin: theme.spacing(1),
+  },
+  deliverymanPanelFabsBox: {
+    position: 'absolute',
+    right: theme.spacing(3),
+    bottom: theme.spacing(3),
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  deliverymanPanelFab: {
+    marginTop: theme.spacing(1),
+  },
+  deliverymanPanelContainer: {
+  },
+  deliverymanPanelStoreTitle: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  deliverymanPanelStoreOrders: {
+    paddingTop: theme.spacing(3),
+  },
+  deliverymanPanelPaper: {
+    margin: theme.spacing(2),
+    padding: theme.spacing(2),
+    minWidth: "500px",
+  },
+  deliverymanPanelTitle: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(0),
+    overflow: 'hidden',
+  },
+  deliverymanPanelDetails: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(3),
   },
 }))
 
@@ -17,6 +57,7 @@ export default function DeliverymanPanel(props) {
   const [orderDetailsList, setOrderDetailsList] = useState([]);
   const [storeDetailsList, setStoreDetailsList] = useState([]);
   const [orderConditionList, setOrderConditionList] = useState([]);
+  const [myRateIntArray, setMyRateIntArray] = useState([50, 20, 5, 5, 20]);
   // const orderIDsList = [1,2,3,4]
 
   const load_available_orderIDs = async () => {
@@ -46,27 +87,46 @@ export default function DeliverymanPanel(props) {
   }, [contract])
 
   return (
-    <Container className={classes.DeliverymanPanelContainer}>
-      <Grid container spacing={4}>
-        {orderIDsList.map((id, index) => (
-          <Grid item key={id} xs={12} sm={6} md={4}>
-            {/* <DeliverymanSingleOrder
-              orderID={id}
-              isLoadingPair={props.isLoadingPair}
-              web3States={props.web3States}
-              orderDetails={orderDetailsList[index]}
-              storeDetails={storeDetailsList[index]}
-              orderCondition={orderConditionList[index]}
-            /> */}
-            <SingleOrder
-              orderID={id}
-              isLoadingPair={props.isLoadingPair}
-              web3States={props.web3States}
-              parentIs="Deliveryman"
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <Box className={classes.deliverymanPanelBox}>
+      <Container className={classes.deliverymanPanelContainer}>
+        <Typography variant="h2" className={classes.deliverymanPanelTitle}>
+          {accounts[0]}
+        </Typography>
+        <RateWideBar />
+        <Divider />
+        <Grid container spacing={4} className={classes.deliverymanPanelStoreOrders}>
+          {orderIDsList.map((id, index) => (
+            <Grid item key={id} xs={12} sm={6} md={4}>
+              {/* <DeliverymanSingleOrder
+                orderID={id}
+                isLoadingPair={props.isLoadingPair}
+                web3States={props.web3States}
+                orderDetails={orderDetailsList[index]}
+                storeDetails={storeDetailsList[index]}
+                orderCondition={orderConditionList[index]}
+              /> */}
+              <SingleOrder
+                orderID={id}
+                isLoadingPair={props.isLoadingPair}
+                web3States={props.web3States}
+                parentIs="Deliveryman"
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+      <Box className={classes.deliverymanPanelFabsBox}>
+        <Fab
+          color="primary"
+          aria-label="edit store info"
+          className={classes.deliverymanPanelFab}
+          disabled={false}
+          onClick={() => {}}
+        >
+          <ShoppingCart />
+        </Fab>
+      </Box>
+
+    </Box>
   )
 }
