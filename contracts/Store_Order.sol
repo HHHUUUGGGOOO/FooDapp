@@ -166,7 +166,7 @@ contract Store_Order is BaseData, ownable {
         _;
     }  
 
-    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand) external payable returns(uint) {
+    function UserSetMyOrderPost(uint _orderID, uint _storeID, uint[] calldata _itemsNumber, uint _tipsValueMultiplicand, string calldata _targetplace) external payable returns(uint) {
         if (_orderID == uint(0)) {
             // need to pay ether
             // require(msg.value == _setOrderFee, "Not enough ether to post order...");
@@ -178,6 +178,7 @@ contract Store_Order is BaseData, ownable {
             // add a new order into the public set
             AllOrderList.push(_orderID);
             userAddrToOrderID[msg.sender].push(_orderID);
+            userAddrToTargetPlace[msg.sender] = _targetplace;
             // add a new order to the store
             storeIDToOrder[_storeID].push(_orderID);
             // mapping orderID to order
@@ -207,12 +208,18 @@ contract Store_Order is BaseData, ownable {
                 _totalPrice = _totalPrice + _itemsPrice[i]*_itemsNumber[i];
             }
             orderIDToOrder[_orderID].totalPrice = _totalPrice;
+            userAddrToTargetPlace[msg.sender] = _targetplace;
             // fire new order event
             emit NewOrderBasic(orderIDToOrder[_orderID].setTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand, _totalPrice);
             
         }
         return _orderID;
         
+    }
+
+    function UserAddrGetTargetPlace() public view returns(string memory) {
+        // return orderID[]
+        return userAddrToTargetPlace[msg.sender];
     }
 
     function UserAddrGetOrder() public view returns(uint[] memory) {

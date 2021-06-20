@@ -40,6 +40,7 @@ contract BaseData{
     mapping (address => uint[])                  public ownerAddrToStoreID;
     mapping (address => uint[])                  public userAddrToOrderID;
     mapping (address => uint[])                  public deliverymanAddrToOrderID;
+    mapping (address => string)                  public userAddrToTargetPlace;
     
     uint[] public AllOrderList;   // Order[] --> uint[]  
     uint[] public AllStoreList;
