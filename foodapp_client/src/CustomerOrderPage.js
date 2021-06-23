@@ -9,9 +9,29 @@ const useStyles = makeStyles((theme) => ({
   },
   customerOrderTitle: {
     padding: theme.spacing(2),
+    paddingBottom: theme.spacing(0),
+  },
+  customerStoreOrderInfos: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
   customerOrderMenu: {
     padding: theme.spacing(2),
+  },
+  customerStoreMenuItemBox: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  customerStoreMenuItemName: {
+    alignSelf: 'flex-start',
+  },
+  customerStoreMenuItemPrice: {
+    alignSelf: 'flex-end',
+  },
+  customerStoreMenuItemAmountGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
   },
   customerOrderFooterBox: {
     padding: theme.spacing(2),
@@ -24,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   customerOrderTipTextField: {
     width: '30%',
+    marginLeft: theme.spacing(1),
   },
   customerOrderButtonWrapper: {
     position: 'relative',
@@ -61,35 +82,41 @@ export default function CustomerOrderPage(props) {
 
   return (
     <Paper className={classes.customerOrderPaper}>
-      <Box className={classes.customerOrderTitle}>
-        <Typography variant="h3" gutterBottom>{orderDetail[2]}</Typography>
+      <Typography className={classes.customerOrderTitle} variant="h3">{orderDetail[2]}</Typography>
+      <Box className={classes.customerStoreOrderInfos}>
         <Typography variant="subtitle1">{orderDetail[3]}</Typography>
         <Typography variant="subtitle1">{orderTime}</Typography>
       </Box>
-      <Divider />
+      {/* <Divider /> */}
       <Box className={classes.customerOrderMenu}>
         {orderDetail[5].split("\n").map((dish, dish_index) => (
-          <Grid container xs={12} spacing={1}>
-            <Grid item xs={12} sm={9}>
-              <Typography>{dish}</Typography>
+          <>
+            <Divider />
+            <Grid container xs={12} spacing={1}>
+              <Grid item xs={9} sm={9}>
+                <Box className={classes.customerStoreMenuItemBox}>
+                  <Typography className={classes.customerStoreMenuItemName}>{dish}</Typography>
+                  <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                </ Box>
+              </Grid>
+              <Grid item xs={3} sm={3} className={classes.customerStoreMenuItemAmountGrid}>
+                <TextField
+                  onChange={(event) => {
+                    console.log(Number(event.target.value));
+                    let itemsNumberChange = itemsNumber;
+                    if (!isNaN(Number(event.target.value))){
+                      itemsNumberChange[dish_index] = Number(event.target.value);
+                    }
+                    else{
+                      itemsNumberChange[dish_index] = Number(0);
+                    }
+                    console.log(itemsNumberChange);
+                    setItemsNumber(itemsNumberChange);
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                onChange={(event) => {
-                  console.log(Number(event.target.value));
-                  let itemsNumberChange = itemsNumber;
-                  if (!isNaN(Number(event.target.value))){
-                    itemsNumberChange[dish_index] = Number(event.target.value);
-                  }
-                  else{
-                    itemsNumberChange[dish_index] = Number(0);
-                  }
-                  console.log(itemsNumberChange);
-                  setItemsNumber(itemsNumberChange);
-                }}
-              />
-            </Grid>
-          </Grid>
+          </>
         ))}
       </Box>
       <Divider />

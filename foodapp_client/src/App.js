@@ -189,7 +189,7 @@ function App() {
           <Typography className={classes.toolbar} variant="h4">
             FooDapp
           </Typography>
-          <Box className={classes.searchBarBox}>
+          {/* <Box className={classes.searchBarBox}>
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -202,7 +202,7 @@ function App() {
             <IconButton className={classes.searchReturnButton} color="inherit" onClick={handleSearchWordChange} variant='contained'>
               <KeyboardReturnIcon />
             </IconButton>
-          </Box>
+          </Box> */}
           <Box className={classes.identitySelectorBox}>
             <Select
               className={classes.identitySelectorSelect}

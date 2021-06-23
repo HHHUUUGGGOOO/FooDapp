@@ -12,55 +12,39 @@ import Web3 from "web3";
 import { RateWideBar } from "./Rate";
 
 import SingleOrder from "./SingleOrder";
+import { useStylesForOrdersPage, TitleWithBigTail } from "./Utils";
 
 const useStyles = makeStyles((theme) => ({
-  storePanelBox: {
+  storePanelTitle: {
     display: 'flex',
-    width: '100vw',
-    margin: theme.spacing(1),
+    alignItems: 'baseline',
   },
-  storePanelFabsBox: {
-    position: 'absolute',
-    right: theme.spacing(3),
-    bottom: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'column',
+  storePanelTitleFirst: {
+    marginRight: theme.spacing(2),
   },
-  storePanelFab: {
-    marginTop: theme.spacing(1),
-  },
-  StorePanelContainer: {
-  },
-  storePanelStoreTitle: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  storePanelStoreOrders: {
-    paddingTop: theme.spacing(3),
-  },
-  storePanelPaper: {
+  storeDialogPaper: {
     margin: theme.spacing(2),
     padding: theme.spacing(2),
     minWidth: "500px",
   },
-  storePanelTitle: {
+  storeDialogTitle: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(0),
   },
-  storePanelDetails: {
+  storeDialogDetails: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(3),
   },
-  storePanelButtonBox: {
+  storeDialogButtonBox: {
     padding: theme.spacing(2),
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  storePanelButtonWrapper: {
+  storeDialogButtonWrapper: {
     position: 'relative',
   },
-  storePanelButtonProgress: {
+  storeDialogButtonProgress: {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -71,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function StorePanel(props) {
   const classes = useStyles();
+  const classesP = useStylesForOrdersPage();
   const { web3, accounts, contract } = props.web3States;
   const { isLoading, setIsLoading } = props.isLoadingPair;
   const [myStoresIDList, setMyStoresIDList] = useState([]);
@@ -186,13 +171,18 @@ export default function StorePanel(props) {
   }, [currentStoreIndex, myStoresIDList])
 
   return (
-    <Box className={classes.storePanelBox}>
+    <Box className={classesP.panelBox}>
       {myStoresIDList.length && (
-        <Container className={classes.StorePanelContainer}>
-          <Typography variant="h2" className={classes.storePanelStoreTitle}>{"Orders for " + storeName}</Typography>
+        <Container className={classesP.panelContainer}>
+          <Box className={classesP.panelTitle}>
+            <Box className={classes.storePanelTitle}>
+              <Typography variant='h4' className={classes.storePanelTitleFirst}>{"Orders for"}</Typography>
+              <Typography variant='h2'>{storeName}</Typography>
+            </Box>
+          </Box>
           <RateWideBar />
           <Divider />
-          <Grid container spacing={4} className={classes.storePanelStoreOrders}>
+          <Grid container spacing={4} className={classesP.panelOrders}>
             {storeOrderIDs.map((id, index) => (
               <Grid item key={id} xs={12} sm={6} md={4}>
                 <SingleOrder
@@ -213,11 +203,11 @@ export default function StorePanel(props) {
           load_my_storeIDs();
         }}
       >
-        <Box className={classes.storePanelTitle}>
+        <Box className={classes.storeDialogTitle}>
           <Typography variant="h3">{storeTitle}</Typography>
         </Box>
         <Divider />
-        <Box className={classes.storePanelDetails}>
+        <Box className={classes.storeDialogDetails}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -273,8 +263,8 @@ export default function StorePanel(props) {
             </Grid>
           </Grid>
         </Box>
-        <Box className={classes.storePanelButtonBox}>
-          <Box className={classes.storePanelButtonWrapper}>
+        <Box className={classes.storeDialogButtonBox}>
+          <Box className={classes.storeDialogButtonWrapper}>
             <Button
               variant="contained"
               color='primary'
@@ -283,15 +273,15 @@ export default function StorePanel(props) {
             >
               Save Changes
               </Button>
-            {isSavingChanges && <CircularProgress size={24} className={classes.storePanelButtonProgress} />}
+            {isSavingChanges && <CircularProgress size={24} className={classes.storeDialogButtonProgress} />}
           </Box>
         </Box>
       </Dialog>
-      <Box className={classes.storePanelFabsBox}>
+      <Box className={classesP.fabsBox}>
         <Fab
           color="primary"
           aria-label="add"
-          className={classes.storePanelFab}
+          className={classesP.fab}
           onClick={handleAddStore}
         >
           <Add />
@@ -299,7 +289,7 @@ export default function StorePanel(props) {
         <Fab
           color="primary"
           aria-label="next store"
-          className={classes.storePanelFab}
+          className={classesP.fab}
           disabled={currentStoreIndex === myStoresIDList.length - 1}
           onClick={() => { setCurrentStoreIndex(currentStoreIndex + 1) }}
         >
@@ -308,7 +298,7 @@ export default function StorePanel(props) {
         <Fab
           color="primary"
           aria-label="current store"
-          className={classes.storePanelFab}
+          className={classesP.fab}
           disabled
         >
           <Typography>{(currentStoreIndex+1) + "/" + myStoresIDList.length}</Typography>
@@ -316,7 +306,7 @@ export default function StorePanel(props) {
         <Fab
           color="primary"
           aria-label="prev store"
-          className={classes.storePanelFab}
+          className={classesP.fab}
           disabled={currentStoreIndex === 0}
           onClick={() => { setCurrentStoreIndex(currentStoreIndex - 1) }}
         >
@@ -325,7 +315,7 @@ export default function StorePanel(props) {
         <Fab
           color="primary"
           aria-label="edit store info"
-          className={classes.storePanelFab}
+          className={classesP.fab}
           disabled={!myStoresIDList.length}
           onClick={() => { setIsEditingInfo(true) }}
         >

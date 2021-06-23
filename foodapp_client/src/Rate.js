@@ -1,10 +1,11 @@
 import {
-  Grid, Typography, LinearProgress,
-  makeStyles, withStyles
+  Grid, Typography, LinearProgress, Divider, Box,
+  makeStyles, withStyles, Dialog
 } from "@material-ui/core"
 import {
   Rating
 } from "@material-ui/lab"
+import { useState } from "react";
 
 const useStyles = makeStyles((theme)=> ({
   rateGrid: {
@@ -26,7 +27,26 @@ const useStyles = makeStyles((theme)=> ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-
+  },
+  rateBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(3),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rateRowBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1),
+    minWidth: '250px', 
+    justifyContent: 'center',
+  },
+  rateRowTypography: {
+    alignSelf: 'flex-start',
+  },
+  rateRowRating: {
+    alignSelf: 'flex-end',
   },
 }))
 
@@ -83,5 +103,46 @@ export function RateWideBar(props){
         <Rating readOnly value={3.6} precision={0.1}/>
       </Grid>
     </Grid>
+  )
+}
+
+export function RatingDialogContent(props){
+  const classes = useStyles();
+  const parentIs = props.parentIs;
+  const { web3, accounts, contract } = props.web3States;
+  const orderID = props.id;
+
+  const [userRate, setUserRate] = useState(0);
+  const [deliRate, setDeliRate] = useState(0);
+  const [storRate, setStorRate] = useState(0);
+
+  return (
+      <Box className={classes.rateBox}>
+        <Typography variant="h4" gutterBottom>Rating...</Typography>
+        {(parentIs !== "Customer") && (
+          <Box className={classes.rateRowBox} >
+            <Divider />
+            <Typography className={classes.rateRowTypography}>How is the Customer ?</Typography>
+            <Rating className={classes.rateRowRating} name="user rate" value={userRate} onChange={(event, newValue) => {
+              setUserRate(newValue)}} />
+          </Box>
+        )}
+        {(parentIs !== "Deliveryman") && (
+          <Box className={classes.rateRowBox} >
+            <Divider />
+            <Typography className={classes.rateRowTypography}>Rate Deliveryman: </Typography>
+            <Rating className={classes.rateRowRating} name="deliveryman rate" value={deliRate} onChange={(event, newValue) => {
+              setDeliRate(newValue)}} />
+          </Box>
+        )}
+        {(parentIs !== "Store") && (
+          <Box className={classes.rateRowBox} >
+            <Divider />
+            <Typography className={classes.rateRowTypography}>Rate Store: </Typography>
+            <Rating className={classes.rateRowRating} name="store rate" value={storRate} onChange={(event, newValue) => {
+              setStorRate(newValue)}} />
+          </Box>
+        )}
+      </Box>
   )
 }

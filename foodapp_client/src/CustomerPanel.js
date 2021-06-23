@@ -2,33 +2,14 @@ import {
   Button, Container, Dialog, DialogContent, DialogTitle, Divider,
   makeStyles, Paper, Typography, Box, CircularProgress, Grid, Fab
 } from "@material-ui/core";
-import { ShoppingCart } from "@material-ui/icons";
+import { ShoppingCart, Store } from "@material-ui/icons";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
 import { RateWideBar } from "./Rate";
 import SingleOrder from "./SingleOrder";
+import { AddressWithBigTail, useStylesForOrdersPage } from "./Utils";
 
 const useStyles = makeStyles((theme) => ({
-  panelBox:{
-    display: 'flex',
-    width: '100vw',
-    margin: theme.spacing(1),
-  },
-  fabsBox: {
-    position: 'absolute',
-    right: theme.spacing(3),
-    bottom: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  fab: {
-    marginTop: theme.spacing(1),
-  },
-  panelContainer: {
-    // display: 'flex',
-    // flexDirection: 'row',
-    // paddingTop: theme.spacing(3),
-  },
   customerPanelStorePaper: {
     display: 'flex',
     flexDirection: 'column',
@@ -42,19 +23,21 @@ const useStyles = makeStyles((theme) => ({
   customerPanelStoreMenuSection: {
     margin: theme.spacing(2),
   },
-  panelTitle: {
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(0),
-    overflow: 'hidden',
+  customerStoreMenuItemBox: {
+    display: 'flex',
+    flexDirection: 'column',
   },
-  panelOrders: {
-    paddingTop: theme.spacing(3),
+  customerStoreMenuItemName: {
+    alignSelf: 'flex-start',
+  },
+  customerStoreMenuItemPrice: {
+    alignSelf: 'flex-end',
   },
 }));
 
 export default function CustomerPage(props) {
   const classes = useStyles();
+  const classesP = useStylesForOrdersPage();
   const { web3, accounts, contract } = props.web3States;
 
   // const accounts = props.accounts
@@ -66,11 +49,11 @@ export default function CustomerPage(props) {
   const [menuList, setMenuList] = useState([])
   const [storeList, setStoreList] = useState([]);
   const [orderDetail, setOrderDetail] = useState([]);
-  const [ordertime, setOrderTime] = useState(''); 
+  const [ordertime, setOrderTime] = useState('');
   const [isOpenCart, setIsOpenCart] = useState(false);
   const orderIDsList = [0, 1];
-  
-  
+
+
   const timeStamp = async () => {
     const timestamp = Date.now();
     const date = new Date(timestamp);
@@ -111,11 +94,11 @@ export default function CustomerPage(props) {
   }, [contract])
 
   return (
-    <Box className={classes.panelBox}>
-      {!isOpenCart? (
-        <Container className={classes.panelContainer}>
+    <Box className={classesP.panelBox}>
+      {!isOpenCart ? (
+        <Container className={classesP.panelContainer}>
           <Grid container spacing={4}>
-            { storeList.map((store, index) => (
+            {storeList.map((store, index) => (
               <Grid item key={index} xs={12} sm={6} md={4}>
                 <Paper
                   className={classes.customerPanelStorePaper}
@@ -126,10 +109,14 @@ export default function CustomerPage(props) {
                     <Typography variant="h4">{store.storeName}</Typography>
                     <Typography variant="subtitle2">{store.moreInfo}</Typography>
                   </Box>
-                  <Divider />
+                  {/* <Divider /> */}
                   <Box className={classes.customerPanelStoreMenuSection}>
                     {store.menu.map((item) => (
-                      <Typography variant="body1">{"🥡 " + item}</Typography>
+                      <Box className={classes.customerStoreMenuItemBox}>
+                        <Divider />
+                        <Typography className={classes.customerStoreMenuItemName}>{item}</Typography>
+                        <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                      </ Box>
                     ))}
                   </Box>
                 </Paper>
@@ -137,14 +124,14 @@ export default function CustomerPage(props) {
             ))}
           </Grid>
         </Container>
-      ):(
-        <Container className={classes.panelContainer}>
-          <Typography variant="h2" className={classes.panelTitle}>
-            {accounts[0]}
-          </Typography>
+      ) : (
+        <Container className={classesP.panelContainer}>
+          <Box className={classesP.panelTitle}>
+            <AddressWithBigTail address={accounts === null ? ("Loading...") : (accounts[0])} />
+          </Box>
           <RateWideBar />
           <Divider />
-          <Grid container spacing={4} className={classes.panelOrders}>
+          <Grid container spacing={4} className={classesP.panelOrders}>
             {orderIDsList.map((id, index) => (
               <Grid item key={id} xs={12} sm={6} md={4}>
                 <SingleOrder
@@ -158,11 +145,11 @@ export default function CustomerPage(props) {
           </Grid>
         </Container>
       )}
-      <Box className={classes.fabsBox}>
+      <Box className={classesP.fabsBox}>
         <Fab
           color="primary"
           aria-label="test"
-          className={classes.fab}
+          className={classesP.fab}
           onClick={test}
         >
           <Typography>test</Typography>
@@ -170,10 +157,14 @@ export default function CustomerPage(props) {
         <Fab
           color="primary"
           aria-label="check cart"
-          className={classes.fab}
-          onClick={() => {setIsOpenCart(!isOpenCart)}}
+          className={classesP.fab}
+          onClick={() => { setIsOpenCart(!isOpenCart) }}
         >
-          <ShoppingCart />
+          {isOpenCart ? (
+            <Store />
+          ) : (
+            <ShoppingCart />
+          )}
         </Fab>
       </Box>
       <Dialog open={isOrdering} onClose={() => { setIsOrdering(false) }}>

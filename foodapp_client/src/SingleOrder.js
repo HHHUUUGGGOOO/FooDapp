@@ -4,6 +4,7 @@ import {
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import { useEffect, useState } from "react";
+import { RatingDialogContent } from "./Rate";
 
 const useStyles = makeStyles((theme) => ({
   orderPaper: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 }))
 
 export default function SingleOrder(props) {
@@ -81,9 +82,6 @@ export default function SingleOrder(props) {
   const [deliverymanAddr, setDeliverymanAddr] = useState("");
 
   const [isToRate, setIsToRate] = useState(false);
-  const [userRate, setUserRate] = useState(0);
-  const [deliRate, setDeliRate] = useState(0);
-  const [storRate, setStorRate] = useState(0);
 
   const [passedTime, setPassedTime] = useState("");
 
@@ -178,10 +176,10 @@ export default function SingleOrder(props) {
         {menuArray.map((item, index) => (
           itemsNumber[index]>0 && (
           <Grid container xs={12} spacing={1}>
-            <Grid item xs={12} sm={7}>
+            <Grid item xs={7} sm={7}>
               <Typography>{item}</Typography>
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={5} sm={5}>
               <Typography align="left">{"$ " + itemsPrice[index] + " * " + itemsNumber[index] + " = " + itemsPrice[index]*itemsNumber[index]}</Typography>
             </Grid>
           </Grid>
@@ -240,31 +238,7 @@ export default function SingleOrder(props) {
         )}
       </Box>
       <Dialog open={isToRate} onClose={() => {setIsToRate(false)}}>
-        <Box className={classes.rateBox}>
-          {(parentIs !== "Customer") && (
-            <Box className={classes.rateRowBox} >
-              <Typography>Rate Customer: </Typography>
-              <Rating name="user rate" value={userRate} onChange={(event, newValue) => {
-                setUserRate(newValue)}} />
-            </Box>
-          )}
-          {(parentIs !== "Deliveryman") && (
-            <Box className={classes.rateRowBox} >
-              <Typography>Rate Deliveryman: </Typography>
-              <Rating name="deliveryman rate" value={deliRate} onChange={(event, newValue) => {
-                setDeliRate(newValue);
-                console.log(newValue);
-              }} />
-            </Box>
-          )}
-          {(parentIs !== "Store") && (
-            <Box className={classes.rateRowBox} >
-            <Typography>Rate Store: </Typography>
-            <Rating name="store rate" value={storRate} onChange={(event, newValue) => {
-              setStorRate(newValue)}} />
-          </Box>
-          )}
-        </Box>
+        <RatingDialogContent id={orderID}  web3States={props.web3States} parentIs={parentIs} />
       </Dialog>
     </Paper>
   )

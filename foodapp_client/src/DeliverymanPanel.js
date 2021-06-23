@@ -6,51 +6,14 @@ import { ShoppingCart } from "@material-ui/icons";
 import { useState, useEffect } from "react";
 import SingleOrder from "./SingleOrder";
 import { RateWideBar } from "./Rate";
+import { AddressWithBigTail, useStylesForOrdersPage } from "./Utils";
 
 const useStyles = makeStyles((theme) => ({
-  deliverymanPanelBox: {
-    display: 'flex',
-    width: '100vw',
-    margin: theme.spacing(1),
-  },
-  deliverymanPanelFabsBox: {
-    position: 'absolute',
-    right: theme.spacing(3),
-    bottom: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  deliverymanPanelFab: {
-    marginTop: theme.spacing(1),
-  },
-  deliverymanPanelContainer: {
-  },
-  deliverymanPanelStoreTitle: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  deliverymanPanelStoreOrders: {
-    paddingTop: theme.spacing(3),
-  },
-  deliverymanPanelPaper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
-    minWidth: "500px",
-  },
-  deliverymanPanelTitle: {
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(0),
-    overflow: 'hidden',
-  },
-  deliverymanPanelDetails: {
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-  },
 }))
 
 export default function DeliverymanPanel(props) {
   const classes = useStyles();
+  const classesP = useStylesForOrdersPage();
   const { web3, accounts, contract } = props.web3States;
   const { isLoading, setIsLoading } = props.isLoadingPair;
   const [orderIDsList, setOrderIDsList] = useState([]);
@@ -87,14 +50,14 @@ export default function DeliverymanPanel(props) {
   }, [contract])
 
   return (
-    <Box className={classes.deliverymanPanelBox}>
-      <Container className={classes.deliverymanPanelContainer}>
-        <Typography variant="h2" className={classes.deliverymanPanelTitle}>
-          { accounts === null ? ("Loading..."):(accounts[0])}
-        </Typography>
+    <Box className={classesP.panelBox}>
+      <Container className={classesP.panelContainer}>
+        <Box className={classesP.panelTitle}>
+          <AddressWithBigTail address={accounts === null ? ("Loading..."):(accounts[0])} />
+        </Box>
         <RateWideBar />
         <Divider />
-        <Grid container spacing={4} className={classes.deliverymanPanelStoreOrders}>
+        <Grid container spacing={4} className={classesP.panelOrders}>
           {orderIDsList.map((id, index) => (
             <Grid item key={id} xs={12} sm={6} md={4}>
               {/* <DeliverymanSingleOrder
@@ -115,11 +78,11 @@ export default function DeliverymanPanel(props) {
           ))}
         </Grid>
       </Container>
-      <Box className={classes.deliverymanPanelFabsBox}>
+      <Box className={classesP.fabsBox}>
         <Fab
           color="primary"
           aria-label="edit store info"
-          className={classes.deliverymanPanelFab}
+          className={classesP.panelFab}
           disabled={false}
           onClick={() => {}}
         >
