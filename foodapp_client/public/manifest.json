@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "FooDapp",
+  "name": "FooDapp - the distributed food delivery platform.",
   "icons": [
     {
       "src": "favicon.ico",

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { fade, makeStyles } from '@material-ui/core/styles';
 import {
   CssBaseline, Box, AppBar, Toolbar, InputBase,
-  Typography, Select, MenuItem, IconButton, LinearProgress
+  Typography, Select, MenuItem, IconButton, LinearProgress,
+  Avatar
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search'
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     flexGrow: 1,
+  },
+  logo: {
+    marginRight: theme.spacing(2),
   },
   identitySelectorTabs: {
     flexGrow: 0.9,
@@ -181,8 +185,9 @@ function App() {
       // color="transparent"
       >
         <Toolbar className={classes.toolbar}>
-          <Typography className={classes.toolbar}>
-            Toolbar (Add logo here)
+          <Avatar alt="" src="/logo192.png" className={classes.logo}/>
+          <Typography className={classes.toolbar} variant="h4">
+            FooDapp
           </Typography>
           <Box className={classes.searchBarBox}>
             <div className={classes.searchIcon}>
