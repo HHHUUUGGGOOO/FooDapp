@@ -7,9 +7,9 @@ import {
 import SearchIcon from '@material-ui/icons/Search'
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn'
 
-import CustomerPage from './CustomerPage';
+import CustomerPage from './CustomerPanel';
 import DeliverymanPanel from './DeliverymanPanel';
-import StorePanel from './StorePanel2';
+import StorePanel from './StorePanel';
 
 import FooDappContract from './build/contracts/Store_Order.json'
 
