@@ -36,6 +36,22 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     paddingTop: theme.spacing(3),
   },
+  storeDialogMenu:{
+    margin: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  storeDialogPriceGrid: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
+  },
+  storeDialogPriceBox: {
+    display: 'flex',
+  },
+  storeDialogAddItemButton: {
+    height: '100%',
+    width: '100%',
+  },
   storeDialogButtonBox: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -69,8 +85,12 @@ export default function StorePanel(props) {
   const [cityName, setCityName] = useState("");
   const [moreInfo, setMoreInfo] = useState("");
   const [menuString, setMenuString] = useState("");
+  const [itemsPrice, setItemsPrice] = useState([]);
+  const [menuArray, setMenuArray] = useState([]);
+
   const [storeTitle, setStoreTitle] = useState("");
   const [storeOrderIDs, setStoreOrderIDs] = useState([]);
+  const [newMenuItemStr, setNewMenuItemStr] = useState("");
 
   const load_my_storeIDs = async () => {
     if (contract === null) {
@@ -97,6 +117,9 @@ export default function StorePanel(props) {
   }
 
   const load_store_by_storeID = async () => {
+    if (contract === null) {
+      return;
+    }
     if (!myStoresIDList.length) {
       return;
     }
@@ -119,6 +142,8 @@ export default function StorePanel(props) {
         setCityName(Result[3]);
         setMoreInfo(Result[4]);
         setMenuString(Result[5]);
+        setMenuArray(Result[5].split("\n"));
+        setItemsPrice(Result[6]);
       })
     await contract.methods.GetOrderbyStoreID(_storeID)
       .call({ from: accounts[0] })
@@ -131,11 +156,23 @@ export default function StorePanel(props) {
     setIsLoading(false);
   }
 
+  const handleModifyMenuItem = (event, index) => {
+    // TODO
+    // if index = -1, it is going to be a new one
+    // when empty, delete the item
+  }
+
+  const handleModifyMenuPrice = (event, index) => {
+    // TODO
+    // with error handle
+  }
+
   const handleSaveChanges = async () => {
+    // TODO: should handle menu items and prices
     // expect: send to contract, then refresh. may need a loading animation
     setIsSavingChanges(true);
-    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuString, ")");
-    await contract.methods.StoreSetStore(storeID.toString(), storeName, cityName, moreInfo, menuString)
+    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuString, ", ", itemsPrice, ")");
+    await contract.methods.StoreSetStore(storeID.toString(), storeName, cityName, moreInfo, menuString, itemsPrice)
       .send({ from: accounts[0], value: Web3.utils.toWei("0.001", "ether") })
       .on("receipt", function (receipt) {
         console.log("StoreSetStore receipt: ", receipt);
@@ -165,7 +202,6 @@ export default function StorePanel(props) {
     load_my_storeIDs();
   }, [contract])
 
-
   useEffect(() => {
     load_store_by_storeID();
   }, [currentStoreIndex, myStoresIDList])
@@ -176,9 +212,10 @@ export default function StorePanel(props) {
         <Container className={classesP.panelContainer}>
           <Box className={classesP.panelTitle}>
             <Box className={classes.storePanelTitle}>
-              <Typography variant='h4' className={classes.storePanelTitleFirst}>{"Orders for"}</Typography>
+              <Typography variant='h4' className={classesP.marginRight2}>{"Orders for"}</Typography>
               <Typography variant='h2'>{storeName}</Typography>
             </Box>
+            <Typography>{moreInfo}</Typography>
           </Box>
           <RateWideBar />
           <Divider />
@@ -247,19 +284,49 @@ export default function StorePanel(props) {
                 onChange={(event) => { setMoreInfo(event.target.value) }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="menu"
-                name="menu"
-                label="Menu (separate with new lines)"
-                value={menuString}
-                fullWidth
-                multiline
-                rows={4}
-                variant="outlined"
-                onChange={(event) => { setMenuString(event.target.value) }}
-              />
+          </Grid>
+        </Box>
+        <Divider />
+        <Box className={classes.storeDialogMenu}>
+          <Grid container direction='column' spacing={1}>
+            <Grid item container spacing={3} >
+              <Grid item xs={8}>
+                <Typography variant="h5">Dish</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="h5">Price</Typography>
+              </Grid>
+            </Grid>
+            {menuArray.map((item, index) => (
+              <Grid item container spacing={3} id={index} >
+                <Grid item xs={8} className={classes.storeDialogPriceGrid}>
+                  <TextField fullWidth multiline variant="standard"
+                    defaultValue={item}
+                    // onChange={(event)=>{handleModifyMenuItem(event, index)}}
+                  />
+                </Grid>
+                <Grid item xs className={classes.storeDialogPriceGrid}>
+                  <Box className={classes.storeDialogPriceBox}>
+                    <Typography className={classesP.marginRight1} variant="h6" >$</Typography>
+                    <TextField fullWidth multiline variant="standard" value={itemsPrice[index]}
+                      onChange={(event)=>{handleModifyMenuPrice(event, index)}}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            ))}
+            <Grid item container spacing={3} id={-1} >
+              <Grid item xs={8} className={classes.storeDialogPriceGrid}>
+                <TextField fullWidth multiline variant="standard" placeholder="New dish"
+                  // onChange={(event)=>{ setNewMenuItemStr(event.target.value) }}
+                />
+              </Grid>
+              <Grid item xs>
+                <Button onClick={(event) => { handleModifyMenuItem(event, -1) }} variant='outlined' className={classes.storeDialogAddItemButton}>
+                  <Add className={classesP.marginRight1}/>
+                  Add
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Box>

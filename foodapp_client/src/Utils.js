@@ -10,13 +10,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export function AddressWithBigTail(props){
-  const classes = useStyles();
-  var addr = props.address;
-  useEffect(()=>{
-    if (addr.length < 10){
-      addr = " "*10 + addr
-    }
-  })
+  const addr = (props.address.length < 10) ? (" ".repeat(11) + props.address):(props.address);
   return (
     <TitleWithBigTail head={addr.slice(0, -10)} tail={addr.slice(-10)} />
   )
@@ -59,5 +53,20 @@ export const useStylesForOrdersPage = makeStyles((theme) => ({
   },
   panelOrders: {
     paddingTop: theme.spacing(3),
-  },  
+  },
+  marginRight1: {
+    marginRight: theme.spacing(1),
+  },
+  marginRight2: {
+    marginRight: theme.spacing(2),
+  },
+  marginRight3: {
+    marginRight: theme.spacing(3),
+  },
+  width100: {
+    width: '100%',
+  }, 
+  height100: {
+    height: '100%',
+  },
 }))
