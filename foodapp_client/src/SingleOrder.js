@@ -119,6 +119,7 @@ export default function SingleOrder(props) {
     for (let i=0;i<itemsnum.length;i++){
       totalcost = totalcost + itemsprice[i]*itemsnum[i]
     }
+    totalcost = totalcost + parseInt(tipMulti);
     setTotalPrice(totalcost);
     console.log("loaded.")
     setIsLoading(false);
