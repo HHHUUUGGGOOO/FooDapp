@@ -63,6 +63,7 @@ export default function CustomerOrderPage(props) {
   const { web3, accounts, contract } = props.web3States;
   const orderDetail = props.orderDetail;
   const orderTime = props.orderTime;
+  // const orderIDsList = props.orderIDsList;
   const classes = useStyles();
   const [isTakingOrder, setIsTakingOrder] = useState(false);
   const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
@@ -76,7 +77,10 @@ export default function CustomerOrderPage(props) {
       alert("Please Order Something")
       return;
     }
-    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue).send({ from: accounts[0] });
+    let orderplace = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    console.log(Number(orderDetail[0]));
+    console.log(itemsNumber);
+    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue, orderplace).send({ from: accounts[0] });
   }
 
 
@@ -96,7 +100,7 @@ export default function CustomerOrderPage(props) {
               <Grid item xs={9} sm={9}>
                 <Box className={classes.customerStoreMenuItemBox}>
                   <Typography className={classes.customerStoreMenuItemName}>{dish}</Typography>
-                  <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                  <Typography className={classes.customerStoreMenuItemPrice}>NTD${orderDetail[6][dish_index]}</Typography>
                 </ Box>
               </Grid>
               <Grid item xs={3} sm={3} className={classes.customerStoreMenuItemAmountGrid}>
