@@ -53,7 +53,7 @@ export default function CustomerPage(props) {
   const [isOpenCart, setIsOpenCart] = useState(false);
   const [orderIDsList, setOrderIDsList] = useState([]);
 
-
+  const [targetPlace, setTargetPlace] = useState("");
 
   const timeStamp = async () => {
     const timestamp = Date.now();
@@ -89,6 +89,8 @@ export default function CustomerPage(props) {
       }
       console.log(storesDetail);
       setStoreList(storesDetail);
+      let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+      setTargetPlace(place)
     }
   }
 
@@ -183,6 +185,7 @@ export default function CustomerPage(props) {
           orderDetail={orderDetail}
           orderTime={ordertime}
           // orderIDsList={orderIDsList}
+          targetPlace={targetPlace}
         >
         </CustomerOrderPage>
       </Dialog>

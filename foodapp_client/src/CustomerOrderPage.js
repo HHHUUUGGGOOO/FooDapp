@@ -68,8 +68,8 @@ export default function CustomerOrderPage(props) {
   const [isTakingOrder, setIsTakingOrder] = useState(false);
   const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
   const [tipValue, setTipValue] = useState(0);
-     
   const isZero = (number) => number===0 
+  const [targetPlace, setTargetPlace] = useState(props.targetPlace);
 
   const handleTakeOrder = async () => {
     const newPostID = 0;
@@ -77,10 +77,11 @@ export default function CustomerOrderPage(props) {
       alert("Please Order Something")
       return;
     }
-    let orderplace = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    setTargetPlace(place);
     console.log(Number(orderDetail[0]));
     console.log(itemsNumber);
-    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue, orderplace).send({ from: accounts[0] });
+    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue, targetPlace).send({ from: accounts[0] });
   }
 
 
@@ -92,7 +93,9 @@ export default function CustomerOrderPage(props) {
         <Typography variant="subtitle1">{orderTime}</Typography>
         <TextField 
           label="Send to" placeholder="your home, company, or anywhere." fullWidth
-          className={classes.c}
+          defaultValue={targetPlace}
+          className={classes.customerStoreOrderInfos}
+          onChange={(event) => {setTargetPlace(event.target.value)}}
         />
       </Box>
       {/* <Divider /> */}

@@ -82,6 +82,7 @@ export default function SingleOrder(props) {
   const [isReceived     , setIsReceived     ] = useState(false);
   const [userAddr       , setUserAddr       ] = useState("");
   const [deliverymanAddr, setDeliverymanAddr] = useState("");
+  const [targetPlace, setTargetPlace] = useState("");
 
   const [isToRate, setIsToRate] = useState(false);
 
@@ -106,6 +107,8 @@ export default function SingleOrder(props) {
     setIsReceived(Result[3]);
     setUserAddr(Result[4]);
     setDeliverymanAddr(Result[5]);
+    let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    setTargetPlace(place);
     Result = await contract.methods.StoreIDGetStoreDetail(storeID).call({ from: accounts[0]})
     console.log("Store Detail: ", Result);
     setStoreName(Result[2]);
@@ -198,7 +201,7 @@ export default function SingleOrder(props) {
         <Typography variant="h3">{storeName}</Typography>
         <Typography variant="subtitle1">{"Time Passed : " + passedTime}</Typography>
         <Typography variant="subtitle1">{"Delivered by: ..." + deliverymanAddr.slice(-8)}</Typography>
-        <Typography>Send to: {"Somewhere"}</Typography>
+        <Typography>Send to: {targetPlace}</Typography>
       </Box>
       <Divider />
       <Box className={classes.orderMenu}>
