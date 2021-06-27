@@ -199,8 +199,8 @@ export default function SingleOrder(props) {
     <Paper className={classes.orderPaper}>
       <Box className={classes.orderTitle}>
         <Typography variant="h3">{storeName}</Typography>
-        <Typography variant="subtitle1">{"Time Passed : " + passedTime}</Typography>
-        <Typography variant="subtitle1">{"Delivered by: ..." + deliverymanAddr.slice(-8)}</Typography>
+        {/* <Typography variant="subtitle1">{"Time Passed : " + passedTime}</Typography> */}
+        {myOrderChart && (<Typography variant="subtitle1">{"Delivered by: ..." + deliverymanAddr.slice(-8)}</Typography>)}
         <Typography>Send to: {targetPlace}</Typography>
       </Box>
       <Divider />

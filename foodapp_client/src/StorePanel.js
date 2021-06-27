@@ -156,7 +156,7 @@ export default function StorePanel(props) {
     setIsLoading(false);
   }
 
-  const handleModifyMenuItem = (event, index) => {
+  const handleModifyMenuItem = async (event, index) => {
     console.log(menuArray);
     console.log(itemsPrice);
     let temMenuArray = menuArray;
@@ -176,12 +176,14 @@ export default function StorePanel(props) {
     // when empty, delete the item
   }
 
-  const handleModifyMenuPrice = (event, index) => {
-    console.log(event.target.value);
-    itemsPrice[index] = event.target.value;
+  const handleModifyMenuPrice = async (event, index) => {
     console.log(menuArray);
     console.log(itemsPrice);
-    setItemsPrice(itemsPrice);
+    console.log(itemsPrice);
+    let temitemsPrice = [...itemsPrice];
+    
+    temitemsPrice[index] = event.target.value.toString();
+    setItemsPrice(temitemsPrice);
     // TODO
     // with error handle
   }
@@ -434,14 +436,14 @@ export default function StorePanel(props) {
         >
           <Edit />
         </Fab>
-        <Fab
+        {/* <Fab
           color="primary"
           aria-label="prev store"
           className={classesP.fab}
           onClick={() => { test() }}
         >
           <ArrowBack />
-        </Fab>
+        </Fab> */}
       </Box>
     </Box>
   )
