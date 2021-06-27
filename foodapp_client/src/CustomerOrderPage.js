@@ -2,6 +2,9 @@ import {
   Box, Button, CircularProgress, Divider, Grid,
   makeStyles, Paper, Typography, TextField
 } from "@material-ui/core";
+import {
+  Rating
+} from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import Web3 from 'web3'
 const useStyles = makeStyles((theme) => ({

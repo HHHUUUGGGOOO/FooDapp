@@ -146,3 +146,9 @@ export function RatingDialogContent(props){
       </Box>
   )
 }
+
+export function SimpleShowRating(props){
+  return (
+    <Rating name="rate" defaultValue={props.rate} precision={0.1} readOnly />
+  )
+}

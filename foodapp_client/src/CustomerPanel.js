@@ -5,7 +5,7 @@ import {
 import { ShoppingCart, Store } from "@material-ui/icons";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
-import { RateWideBar } from "./Rate";
+import { RateWideBar, SimpleShowRating } from "./Rate";
 import SingleOrder from "./SingleOrder";
 import { AddressWithBigTail, useStylesForOrdersPage } from "./Utils";
 
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     width: '100%',
     height: '100%',
+  },
+  customerPanelStoreRate: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   customerPanelStoreInfoSection: {
     padding: theme.spacing(2),
@@ -113,6 +117,9 @@ export default function CustomerPage(props) {
                   <Box className={classes.customerPanelStoreInfoSection}>
                     <Typography variant="h4">{store.storeName}</Typography>
                     <Typography variant="subtitle2">{store.moreInfo}</Typography>
+                    <Box className={classes.customerPanelStoreRate}>
+                      <SimpleShowRating rate={4.5} />
+                    </Box>
                   </Box>
                   {/* <Divider /> */}
                   <Box className={classes.customerPanelStoreMenuSection}>
