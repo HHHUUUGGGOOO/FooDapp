@@ -74,22 +74,22 @@ export function RateWideBar(props){
       <Grid item xs={9} md={10} container direction='column' spacing={1}>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>5⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0.8*100}/>
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0}/>
           {/* <Typography className={classes.rateAmount}>50</Typography> */}
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>4⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0.1*100}/>
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0}/>
           {/* <Typography className={classes.rateAmount}>50</Typography> */}
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>3⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0.05*100}/>
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0}/>
           {/* <Typography className={classes.rateAmount}>50</Typography> */}
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>2⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0.05*100}/>
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={0}/>
           {/* <Typography className={classes.rateAmount}>50</Typography> */}
         </Grid>
         <Grid item container spacing={1}>
@@ -99,8 +99,8 @@ export function RateWideBar(props){
         </Grid>
       </Grid>
       <Grid item xs sm md className={classes.rateSummaryGrid}>
-        <Typography variant="h2" align='center'>4.6</Typography>
-        <Rating readOnly value={4.6} precision={0.1}/>
+        <Typography variant="h2" align='center'>0</Typography>
+        <Rating readOnly value={0} precision={0.1}/>
       </Grid>
     </Grid>
   )
