@@ -141,7 +141,7 @@ export default function CustomerPage(props) {
           <Box className={classesP.panelTitle}>
             <AddressWithBigTail address={accounts === null ? ("Loading...") : (accounts[0])} />
           </Box>
-          <RateWideBar />
+          {/* {<RateWideBar />} */}
           <Divider />
           <Grid container spacing={4} className={classesP.panelOrders}>
             {orderIDsList.map((id, index) => (
