@@ -90,6 +90,10 @@ export default function CustomerOrderPage(props) {
       <Box className={classes.customerStoreOrderInfos}>
         <Typography variant="subtitle1">{orderDetail[3]}</Typography>
         <Typography variant="subtitle1">{orderTime}</Typography>
+        <TextField 
+          label="Send to" placeholder="your home, company, or anywhere." fullWidth
+          className={classes.c}
+        />
       </Box>
       {/* <Divider /> */}
       <Box className={classes.customerOrderMenu}>

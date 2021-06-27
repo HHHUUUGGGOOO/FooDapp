@@ -198,6 +198,7 @@ export default function SingleOrder(props) {
         <Typography variant="h3">{storeName}</Typography>
         <Typography variant="subtitle1">{"Time Passed : " + passedTime}</Typography>
         <Typography variant="subtitle1">{"Delivered by: ..." + deliverymanAddr.slice(-8)}</Typography>
+        <Typography>Send to: {"Somewhere"}</Typography>
       </Box>
       <Divider />
       <Box className={classes.orderMenu}>
