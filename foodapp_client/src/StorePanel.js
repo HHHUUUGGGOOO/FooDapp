@@ -156,22 +156,57 @@ export default function StorePanel(props) {
     setIsLoading(false);
   }
 
-  const handleModifyMenuItem = (event, index) => {
+  const handleModifyMenuItem = async (event, index) => {
+    console.log(menuArray);
+    console.log(itemsPrice);
+    let temMenuArray = menuArray;
+    temMenuArray[index] = event.target.value;
+    setMenuArray(temMenuArray);
+    let temMenuString = ""
+    for (let i=0;i<temMenuArray.length;i++){
+      temMenuString += temMenuArray[i];
+      if (i !== temMenuArray.length-1){
+        temMenuString += "\n";
+      }
+    }
+    console.log(temMenuString);
+    setMenuString(temMenuString);
     // TODO
     // if index = -1, it is going to be a new one
     // when empty, delete the item
   }
 
-  const handleModifyMenuPrice = (event, index) => {
+  const handleModifyMenuPrice = async (event, index) => {
+    console.log(menuArray);
+    console.log(itemsPrice);
+    console.log(itemsPrice);
+    let temitemsPrice = [...itemsPrice];
+    
+    temitemsPrice[index] = event.target.value.toString();
+    setItemsPrice(temitemsPrice);
     // TODO
     // with error handle
+  }
+
+  const handleModifyMenuPair = (event, index) => {
+    setItemsPrice([...itemsPrice, ""]);
+    setMenuArray([...menuArray, ""]);
   }
 
   const handleSaveChanges = async () => {
     // TODO: should handle menu items and prices
     // expect: send to contract, then refresh. may need a loading animation
     setIsSavingChanges(true);
-    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuString, ", ", itemsPrice, ")");
+    let parse = menuArray.indexOf("");
+    let temMenuArray = menuArray.slice(0, parse);
+    console.log(menuArray);
+    console.log(temMenuArray);
+    parse = itemsPrice.indexOf("");
+    let temItemsPrice = itemsPrice.slice(0, parse);
+    console.log(itemsPrice);
+
+
+    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuArray, ", ", itemsPrice, ")");
     await contract.methods.StoreSetStore(storeID.toString(), storeName, cityName, moreInfo, menuString, itemsPrice)
       .send({ from: accounts[0], value: Web3.utils.toWei("0.001", "ether") })
       .on("receipt", function (receipt) {
@@ -196,7 +231,19 @@ export default function StorePanel(props) {
       setMoreInfo("");
       setMenuString("");
       setIsEditingInfo(true);
+      let parse = menuArray.indexOf("");
+      let newMenuArray = menuArray.slice(0, parse);
+      parse = itemsPrice.indexOf("");
+      let newitemsPrice = itemsPrice.slice(0, parse);
+      setMenuArray(newMenuArray);
+      setItemsPrice(newitemsPrice);
     }
+  const test = () => {
+    console.log("aaaa");
+    setMenuArray([]);
+    setItemsPrice([]);
+  }
+
 
   useEffect(() => {
     load_my_storeIDs();
@@ -302,13 +349,14 @@ export default function StorePanel(props) {
                 <Grid item xs={8} className={classes.storeDialogPriceGrid}>
                   <TextField fullWidth multiline variant="standard"
                     defaultValue={item}
-                    // onChange={(event)=>{handleModifyMenuItem(event, index)}}
+                    onChange={(event)=>{handleModifyMenuItem(event, index)}}
                   />
                 </Grid>
                 <Grid item xs className={classes.storeDialogPriceGrid}>
                   <Box className={classes.storeDialogPriceBox}>
                     <Typography className={classesP.marginRight1} variant="h6" >$</Typography>
-                    <TextField fullWidth multiline variant="standard" value={itemsPrice[index]}
+                    <TextField fullWidth multiline variant="standard"
+                      defaultValue={itemsPrice[index]}
                       onChange={(event)=>{handleModifyMenuPrice(event, index)}}
                     />
                   </Box>
@@ -316,13 +364,13 @@ export default function StorePanel(props) {
               </Grid>
             ))}
             <Grid item container spacing={3} id={-1} >
-              <Grid item xs={8} className={classes.storeDialogPriceGrid}>
+              {/* <Grid item xs={8} className={classes.storeDialogPriceGrid}>
                 <TextField fullWidth multiline variant="standard" placeholder="New dish"
                   // onChange={(event)=>{ setNewMenuItemStr(event.target.value) }}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs>
-                <Button onClick={(event) => { handleModifyMenuItem(event, -1) }} variant='outlined' className={classes.storeDialogAddItemButton}>
+                <Button onClick={(event) => { handleModifyMenuPair(event, -1) }} variant='outlined' className={classes.storeDialogAddItemButton}>
                   <Add className={classesP.marginRight1}/>
                   Add
                 </Button>
@@ -388,6 +436,14 @@ export default function StorePanel(props) {
         >
           <Edit />
         </Fab>
+        {/* <Fab
+          color="primary"
+          aria-label="prev store"
+          className={classesP.fab}
+          onClick={() => { test() }}
+        >
+          <ArrowBack />
+        </Fab> */}
       </Box>
     </Box>
   )

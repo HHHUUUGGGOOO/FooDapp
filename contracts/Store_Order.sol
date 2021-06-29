@@ -66,6 +66,12 @@ contract Store_Order is BaseData, ownable {
             for (uint i = 1 ; i != 6 ; i++) {
                 PeopleNumRateTheStar[_storeID][i] = 0;
             }
+            // default rating
+            if (storeIDToStoreRate[storeid].length == 0) {
+                for (uint i = 0 ; i < 5 ; i++) {
+                    storeIDToStoreRate[storeid].push(0);
+                }
+            }
             Store memory newStore = Store(_storeID, msg.sender, _storeName, _cityName, _moreInfo, _menu);
             // add price
             storeIDToItemsPrice[storeid] = _itemsPrice;
@@ -189,6 +195,17 @@ contract Store_Order is BaseData, ownable {
             for (uint i = 1 ; i != _itemsNumber.length ; i++) {
                 _totalPrice = _totalPrice + _itemsPrice[i]*_itemsNumber[i];
             }
+            // default rating
+            if (addrToUserRate[msg.sender].length == 0) {
+                for (uint i = 0 ; i < 5 ; i++) {
+                    addrToUserRate[msg.sender].push(0);
+                }
+            }
+            if (addrToDeliverymanRate[msg.sender].length == 0) {
+                for (uint i = 0 ; i < 5 ; i++) {
+                    addrToDeliverymanRate[msg.sender].push(0);
+                }
+            }
             // fire event
             emit NewOrderBasic(_updateTime, _orderID, _storeID, _itemsNumber, _tipsValueMultiplicand, _totalPrice);
             emit NewOrderScore(0, 0, 0);
@@ -235,6 +252,17 @@ contract Store_Order is BaseData, ownable {
     function SetOrderDelivering(uint _orderID) external payable {
         // need to pay ether
         // require(msg.value == _setDeliveryFee, "Not enough ether to deliver this order...");
+        // default rating
+        if (addrToUserRate[msg.sender].length == 0) {
+            for (uint i = 0 ; i < 5 ; i++) {
+                addrToUserRate[msg.sender].push(0);
+            }
+        }
+        if (addrToDeliverymanRate[msg.sender].length == 0) {
+            for (uint i = 0 ; i < 5 ; i++) {
+                addrToDeliverymanRate[msg.sender].push(0);
+            }
+        }
         // return orderID
         orderIDToOrder[_orderID].deliverymanAddr = msg.sender;
         deliverymanAddrToOrderID[msg.sender].push(_orderID);
@@ -264,6 +292,7 @@ contract Store_Order is BaseData, ownable {
         // return new rate
         orderIDToOrder[_orderID].userToStoreScore = _userToStoreScore;
         PeopleNumRateTheStar[orderIDToOrder[_orderID].storeID][_userToStoreScore]++;
+        storeIDToStoreRate[orderIDToOrder[_orderID].storeID][_userToStoreScore-1]++;
         // fire event
         emit StoreBeenRated(msg.sender, _orderID, _userToStoreScore);
         // return;
@@ -272,6 +301,7 @@ contract Store_Order is BaseData, ownable {
     function UserRateDeliveryman(uint _orderID, uint _userToDeliverymanScore) external userOf(_orderID) {
         // rating only int (1~256) / exp
         orderIDToOrder[_orderID].userToDeliverymanScore = _userToDeliverymanScore;
+        addrToDeliverymanRate[orderIDToOrder[_orderID].deliverymanAddr][_userToDeliverymanScore-1]++;
         // fire event
         emit DeliverymanBeenRated(msg.sender, _orderID, _userToDeliverymanScore);
         // return;
@@ -280,9 +310,25 @@ contract Store_Order is BaseData, ownable {
     function DeliverymanRateCustomer(uint _orderID, uint _deliverymanToUserScore) external deliveryOf(_orderID) {
         // rating only int (1~256) / exp
         orderIDToOrder[_orderID].deliverymanToUserScore = _deliverymanToUserScore;
+        addrToUserRate[orderIDToOrder[_orderID].userAddr][_deliverymanToUserScore-1]++;
         // fire event
         emit UserBeenRated(msg.sender, _orderID, _deliverymanToUserScore);
         // return;
+    }
+
+    function AddrGetUserRate() public view returns(uint[] memory) {
+        // return orderID[]
+        return addrToUserRate[msg.sender];
+    }
+
+    function AddrGetDeliverymanRate() public view returns(uint[] memory) {
+        // return orderID[]
+        return addrToDeliverymanRate[msg.sender];
+    }
+
+    function StoreIDGetRate(uint _storeID) public view returns (uint[] memory) {
+        // return 
+        return storeIDToStoreRate[_storeID];
     }
 
 }

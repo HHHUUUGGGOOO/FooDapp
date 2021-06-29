@@ -5,7 +5,7 @@ import {
 import { ShoppingCart, Store } from "@material-ui/icons";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
-import { RateWideBar } from "./Rate";
+import { RateWideBar, SimpleShowRating } from "./Rate";
 import SingleOrder from "./SingleOrder";
 import { AddressWithBigTail, useStylesForOrdersPage } from "./Utils";
 
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     width: '100%',
     height: '100%',
+  },
+  customerPanelStoreRate: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   customerPanelStoreInfoSection: {
     padding: theme.spacing(2),
@@ -51,8 +55,9 @@ export default function CustomerPage(props) {
   const [orderDetail, setOrderDetail] = useState([]);
   const [ordertime, setOrderTime] = useState('');
   const [isOpenCart, setIsOpenCart] = useState(false);
-  const orderIDsList = [0, 1];
+  const [orderIDsList, setOrderIDsList] = useState([]);
 
+  const [targetPlace, setTargetPlace] = useState("");
 
   const timeStamp = async () => {
     const timestamp = Date.now();
@@ -68,8 +73,8 @@ export default function CustomerPage(props) {
     setIsOrdering(true);
   }
   const test = async () => {
-    const order = await contract.methods.GetAllOrderInformation().call({ from: accounts[0] })
-    console.log(order);
+    console.log("hihi");
+    console.log(storeList); 
   }
   const loadStore = async () => {
     let storesDetail = []
@@ -82,10 +87,14 @@ export default function CustomerPage(props) {
           storeID: detail[0],
           storeName: detail[2],
           moreInfo: detail[4],
-          menu: detail[5].split("\n")
+          menu: detail[5].split("\n"),
+          itemsPrice: detail[6]
         })
       }
+      console.log(storesDetail);
       setStoreList(storesDetail);
+      let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+      setTargetPlace(place)
     }
   }
 
@@ -108,14 +117,17 @@ export default function CustomerPage(props) {
                   <Box className={classes.customerPanelStoreInfoSection}>
                     <Typography variant="h4">{store.storeName}</Typography>
                     <Typography variant="subtitle2">{store.moreInfo}</Typography>
+                    <Box className={classes.customerPanelStoreRate}>
+                      <SimpleShowRating rate={4.5} />
+                    </Box>
                   </Box>
                   {/* <Divider /> */}
                   <Box className={classes.customerPanelStoreMenuSection}>
-                    {store.menu.map((item) => (
+                    {store.menu.map((item, menu_index) => (
                       <Box className={classes.customerStoreMenuItemBox}>
                         <Divider />
                         <Typography className={classes.customerStoreMenuItemName}>{item}</Typography>
-                        <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                        <Typography className={classes.customerStoreMenuItemPrice}>NTD${store.itemsPrice[menu_index]}</Typography>
                       </ Box>
                     ))}
                   </Box>
@@ -129,7 +141,7 @@ export default function CustomerPage(props) {
           <Box className={classesP.panelTitle}>
             <AddressWithBigTail address={accounts === null ? ("Loading...") : (accounts[0])} />
           </Box>
-          <RateWideBar />
+          {/* {<RateWideBar />} */}
           <Divider />
           <Grid container spacing={4} className={classesP.panelOrders}>
             {orderIDsList.map((id, index) => (
@@ -158,7 +170,13 @@ export default function CustomerPage(props) {
           color="primary"
           aria-label="check cart"
           className={classesP.fab}
-          onClick={() => { setIsOpenCart(!isOpenCart) }}
+          onClick={async () => { 
+            setIsOpenCart(!isOpenCart);
+            const orderList = await contract.methods.UserAddrGetOrder().call({ from: accounts[0] })
+            setOrderIDsList(orderList);
+            console.log("orderList");
+            console.log(orderList);
+          }}
         >
           {isOpenCart ? (
             <Store />
@@ -173,6 +191,8 @@ export default function CustomerPage(props) {
           web3States={props.web3States}
           orderDetail={orderDetail}
           orderTime={ordertime}
+          // orderIDsList={orderIDsList}
+          targetPlace={targetPlace}
         >
         </CustomerOrderPage>
       </Dialog>

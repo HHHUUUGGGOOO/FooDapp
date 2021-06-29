@@ -2,6 +2,9 @@ import {
   Box, Button, CircularProgress, Divider, Grid,
   makeStyles, Paper, Typography, TextField
 } from "@material-ui/core";
+import {
+  Rating
+} from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import Web3 from 'web3'
 const useStyles = makeStyles((theme) => ({
@@ -63,12 +66,13 @@ export default function CustomerOrderPage(props) {
   const { web3, accounts, contract } = props.web3States;
   const orderDetail = props.orderDetail;
   const orderTime = props.orderTime;
+  // const orderIDsList = props.orderIDsList;
   const classes = useStyles();
   const [isTakingOrder, setIsTakingOrder] = useState(false);
   const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
   const [tipValue, setTipValue] = useState(0);
-     
   const isZero = (number) => number===0 
+  const [targetPlace, setTargetPlace] = useState(props.targetPlace);
 
   const handleTakeOrder = async () => {
     const newPostID = 0;
@@ -76,7 +80,11 @@ export default function CustomerOrderPage(props) {
       alert("Please Order Something")
       return;
     }
-    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue).send({ from: accounts[0] });
+    let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    setTargetPlace(place);
+    console.log(Number(orderDetail[0]));
+    console.log(itemsNumber);
+    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue, targetPlace).send({ from: accounts[0] });
   }
 
 
@@ -86,6 +94,12 @@ export default function CustomerOrderPage(props) {
       <Box className={classes.customerStoreOrderInfos}>
         <Typography variant="subtitle1">{orderDetail[3]}</Typography>
         <Typography variant="subtitle1">{orderTime}</Typography>
+        <TextField 
+          label="Send to" placeholder="your home, company, or anywhere." fullWidth
+          defaultValue={targetPlace}
+          className={classes.customerStoreOrderInfos}
+          onChange={(event) => {setTargetPlace(event.target.value)}}
+        />
       </Box>
       {/* <Divider /> */}
       <Box className={classes.customerOrderMenu}>
@@ -96,7 +110,7 @@ export default function CustomerOrderPage(props) {
               <Grid item xs={9} sm={9}>
                 <Box className={classes.customerStoreMenuItemBox}>
                   <Typography className={classes.customerStoreMenuItemName}>{dish}</Typography>
-                  <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                  <Typography className={classes.customerStoreMenuItemPrice}>NTD${orderDetail[6][dish_index]}</Typography>
                 </ Box>
               </Grid>
               <Grid item xs={3} sm={3} className={classes.customerStoreMenuItemAmountGrid}>
