@@ -9,16 +9,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export function AddressWithBigTail(props){
-  const addr = (props.address.length < 10) ? (" ".repeat(11) + props.address):(props.address);
+export function AddressWithBigTail(props) {
+  const addr = (props.address.length < 10) ? (" ".repeat(11) + props.address) : (props.address);
   return (
     <TitleWithBigTail head={addr.slice(0, -10)} tail={addr.slice(-10)} />
   )
 }
 
-export function TitleWithBigTail(props){
+export function TitleWithBigTail(props) {
   const classes = useStyles();
-  const {head, tail} = props;
+  const { head, tail } = props;
   return (
     <Box className={classes.titleWithBigTailBox}>
       <Typography variant='h5'>{head}</Typography>
@@ -28,7 +28,7 @@ export function TitleWithBigTail(props){
 }
 
 export const useStylesForOrdersPage = makeStyles((theme) => ({
-  panelBox:{
+  panelBox: {
     display: 'flex',
     width: '100vw',
     margin: theme.spacing(1),
@@ -65,7 +65,7 @@ export const useStylesForOrdersPage = makeStyles((theme) => ({
   },
   width100: {
     width: '100%',
-  }, 
+  },
   height100: {
     height: '100%',
   },

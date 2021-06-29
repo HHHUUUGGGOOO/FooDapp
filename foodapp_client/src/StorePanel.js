@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     paddingTop: theme.spacing(3),
   },
-  storeDialogMenu:{
+  storeDialogMenu: {
     margin: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
@@ -90,7 +90,7 @@ export default function StorePanel(props) {
 
   const [storeTitle, setStoreTitle] = useState("");
   const [storeOrderIDs, setStoreOrderIDs] = useState([]);
-  const [newMenuItemStr, setNewMenuItemStr] = useState("");
+  const [rateArray, setRateArray] = useState([0, 0, 0, 0, 0]);
 
   const load_my_storeIDs = async () => {
     if (contract === null) {
@@ -103,19 +103,20 @@ export default function StorePanel(props) {
     await contract.methods.AddressGetStoreID().call({ from: accounts[0] })
       .then((idArray) => {
         _myStoreIDList = idArray.map((_idString) => { return parseInt(_idString, 10); });
+        _myStoreIDList.push(0);
         setMyStoresIDList(_myStoreIDList);
       });
 
     console.log("loaded. StoreList: ", _myStoreIDList);
-    if (!myStoresIDList.length) {
-      console.log("there are no store at all.")
+    if (myStoresIDList.length === 1) {
+      console.log("there are no store at all.");
+      setIsEditingInfo(true);
       setIsLoading(false);
       return;
     }
     setIsLoading(false);
     await load_store_by_storeID();
   }
-
   const load_store_by_storeID = async () => {
     if (contract === null) {
       return;
@@ -126,7 +127,17 @@ export default function StorePanel(props) {
     var _storeID = myStoresIDList[currentStoreIndex]
     setStoreID(_storeID);
     if (_storeID === 0) {
-      console.log("storeID is zero")
+      console.log("Creating new store ...")
+      setStoreName("");
+      setOwnerAddress(accounts[0]);
+      setCityName("");
+      setMoreInfo("");
+      setMenuString("");
+      setItemsPrice([]);
+      setMenuArray([]);
+      setStoreTitle("Create New Store!");
+      setStoreOrderIDs([]);
+      setRateArray([0, 0, 0, 0, 0]);
       return;
     }
     setIsLoading(true);
@@ -152,26 +163,65 @@ export default function StorePanel(props) {
         var _storeOrderIDs = Result.map((_idString) => { return parseInt(_idString, 10); })
         setStoreOrderIDs(_storeOrderIDs);
       })
+    await contract.methods.StoreIDGetRate(_storeID)
+      .call({ from: accounts[0] })
+      .then((result) => {
+        var i = 0;
+        for (i = 0; i < 5; i++) {
+          rateArray[i] = result[i];
+        }
+        setRateArray(rateArray);
+      })
     console.log("loaded store ", _storeID);
     setIsLoading(false);
   }
-
-  const handleModifyMenuItem = (event, index) => {
+  const handleModifyMenuItem = async (event, index) => {
+    console.log(menuArray);
+    console.log(itemsPrice);
+    let temMenuArray = menuArray;
+    temMenuArray[index] = event.target.value;
+    setMenuArray(temMenuArray);
+    let temMenuString = ""
+    for (let i = 0; i < temMenuArray.length; i++) {
+      temMenuString += temMenuArray[i];
+      if (i !== temMenuArray.length - 1) {
+        temMenuString += "\n";
+      }
+    }
+    console.log(temMenuString);
+    setMenuString(temMenuString);
     // TODO
     // if index = -1, it is going to be a new one
     // when empty, delete the item
   }
+  const handleModifyMenuPrice = async (event, index) => {
+    console.log(menuArray);
+    console.log(itemsPrice);
+    console.log(itemsPrice);
+    let temitemsPrice = [...itemsPrice];
 
-  const handleModifyMenuPrice = (event, index) => {
+    temitemsPrice[index] = event.target.value.toString();
+    setItemsPrice(temitemsPrice);
     // TODO
     // with error handle
   }
-
+  const handleModifyMenuPair = (event, index) => {
+    setItemsPrice([...itemsPrice, ""]);
+    setMenuArray([...menuArray, ""]);
+  }
   const handleSaveChanges = async () => {
     // TODO: should handle menu items and prices
     // expect: send to contract, then refresh. may need a loading animation
     setIsSavingChanges(true);
-    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuString, ", ", itemsPrice, ")");
+    let parse = menuArray.indexOf("");
+    let temMenuArray = menuArray.slice(0, parse);
+    console.log(menuArray);
+    console.log(temMenuArray);
+    parse = itemsPrice.indexOf("");
+    let temItemsPrice = itemsPrice.slice(0, parse);
+    console.log(itemsPrice);
+
+    console.log("StoreSetStore(", storeID, ", ", storeName, ", ", cityName, ", ", moreInfo, ", ", menuArray, ", ", itemsPrice, ")");
     await contract.methods.StoreSetStore(storeID.toString(), storeName, cityName, moreInfo, menuString, itemsPrice)
       .send({ from: accounts[0], value: Web3.utils.toWei("0.001", "ether") })
       .on("receipt", function (receipt) {
@@ -185,18 +235,30 @@ export default function StorePanel(props) {
         setIsSavingChanges(false);
       })
   }
-
   const handleAddStore = () => {
-      console.log("Creating new Store!")
-      setStoreTitle("Create a new restaurant!")
-      setStoreID(0);
-      setOwnerAddress("");
-      setStoreName("");
-      setCityName("");
-      setMoreInfo("");
-      setMenuString("");
-      setIsEditingInfo(true);
-    }
+    setCurrentStoreIndex(myStoresIDList.length - 1);
+    // console.log("Creating new Store!")
+    // setStoreTitle("Create a new restaurant!")
+    // setStoreID(0);
+    // setOwnerAddress("");
+    // setStoreName("");
+    // setCityName("");
+    // setMoreInfo("");
+    // setMenuString("");
+    setIsEditingInfo(true);
+    // let parse = menuArray.indexOf("");
+    // let newMenuArray = menuArray.slice(0, parse);
+    // parse = itemsPrice.indexOf("");
+    // let newitemsPrice = itemsPrice.slice(0, parse);
+    // setMenuArray(newMenuArray);
+    // setItemsPrice(newitemsPrice);
+  }
+  const test = () => {
+    console.log("aaaa");
+    setMenuArray([]);
+    setItemsPrice([]);
+  }
+
 
   useEffect(() => {
     load_my_storeIDs();
@@ -217,7 +279,7 @@ export default function StorePanel(props) {
             </Box>
             <Typography>{moreInfo}</Typography>
           </Box>
-          <RateWideBar />
+          <RateWideBar rateArray={rateArray} />
           <Divider />
           <Grid container spacing={4} className={classesP.panelOrders}>
             {storeOrderIDs.map((id, index) => (
@@ -237,7 +299,8 @@ export default function StorePanel(props) {
       <Dialog open={isEditingInfo}
         onClose={() => {
           setIsEditingInfo(false);
-          load_my_storeIDs();
+          setCurrentStoreIndex(currentStoreIndex - 1);
+          // load_my_storeIDs();
         }}
       >
         <Box className={classes.storeDialogTitle}>
@@ -289,7 +352,7 @@ export default function StorePanel(props) {
         <Divider />
         <Box className={classes.storeDialogMenu}>
           <Grid container direction='column' spacing={1}>
-            <Grid item container spacing={3} >
+            <Grid item container spacing={3} id="-1" >
               <Grid item xs={8}>
                 <Typography variant="h5">Dish</Typography>
               </Grid>
@@ -302,28 +365,29 @@ export default function StorePanel(props) {
                 <Grid item xs={8} className={classes.storeDialogPriceGrid}>
                   <TextField fullWidth multiline variant="standard"
                     defaultValue={item}
-                    // onChange={(event)=>{handleModifyMenuItem(event, index)}}
+                    onChange={(event) => { handleModifyMenuItem(event, index) }}
                   />
                 </Grid>
                 <Grid item xs className={classes.storeDialogPriceGrid}>
                   <Box className={classes.storeDialogPriceBox}>
                     <Typography className={classesP.marginRight1} variant="h6" >$</Typography>
-                    <TextField fullWidth multiline variant="standard" value={itemsPrice[index]}
-                      onChange={(event)=>{handleModifyMenuPrice(event, index)}}
+                    <TextField fullWidth multiline variant="standard"
+                      defaultValue={itemsPrice[index]}
+                      onChange={(event) => { handleModifyMenuPrice(event, index) }}
                     />
                   </Box>
                 </Grid>
               </Grid>
             ))}
             <Grid item container spacing={3} id={-1} >
-              <Grid item xs={8} className={classes.storeDialogPriceGrid}>
+              {/* <Grid item xs={8} className={classes.storeDialogPriceGrid}>
                 <TextField fullWidth multiline variant="standard" placeholder="New dish"
                   // onChange={(event)=>{ setNewMenuItemStr(event.target.value) }}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs>
-                <Button onClick={(event) => { handleModifyMenuItem(event, -1) }} variant='outlined' className={classes.storeDialogAddItemButton}>
-                  <Add className={classesP.marginRight1}/>
+                <Button onClick={(event) => { handleModifyMenuPair(event, -1) }} variant='outlined' className={classes.storeDialogAddItemButton}>
+                  <Add className={classesP.marginRight1} />
                   Add
                 </Button>
               </Grid>
@@ -339,7 +403,7 @@ export default function StorePanel(props) {
               disabled={isSavingChanges}
             >
               Save Changes
-              </Button>
+            </Button>
             {isSavingChanges && <CircularProgress size={24} className={classes.storeDialogButtonProgress} />}
           </Box>
         </Box>
@@ -357,7 +421,7 @@ export default function StorePanel(props) {
           color="primary"
           aria-label="next store"
           className={classesP.fab}
-          disabled={currentStoreIndex === myStoresIDList.length - 1}
+          disabled={currentStoreIndex >= myStoresIDList.length - 2}
           onClick={() => { setCurrentStoreIndex(currentStoreIndex + 1) }}
         >
           <ArrowForward />
@@ -368,13 +432,13 @@ export default function StorePanel(props) {
           className={classesP.fab}
           disabled
         >
-          <Typography>{(currentStoreIndex+1) + "/" + myStoresIDList.length}</Typography>
+          <Typography>{(currentStoreIndex + 1) + "/" + (myStoresIDList.length - 1)}</Typography>
         </Fab>
         <Fab
           color="primary"
           aria-label="prev store"
           className={classesP.fab}
-          disabled={currentStoreIndex === 0}
+          disabled={currentStoreIndex <= 0}
           onClick={() => { setCurrentStoreIndex(currentStoreIndex - 1) }}
         >
           <ArrowBack />

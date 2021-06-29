@@ -2,6 +2,9 @@ import {
   Box, Button, CircularProgress, Divider, Grid,
   makeStyles, Paper, Typography, TextField
 } from "@material-ui/core";
+import {
+  Rating
+} from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import Web3 from 'web3'
 const useStyles = makeStyles((theme) => ({
@@ -63,20 +66,25 @@ export default function CustomerOrderPage(props) {
   const { web3, accounts, contract } = props.web3States;
   const orderDetail = props.orderDetail;
   const orderTime = props.orderTime;
+  // const orderIDsList = props.orderIDsList;
   const classes = useStyles();
   const [isTakingOrder, setIsTakingOrder] = useState(false);
   const [itemsNumber, setItemsNumber] = useState(new Array(orderDetail[5].split('\n').length));
   const [tipValue, setTipValue] = useState(0);
-     
-  const isZero = (number) => number===0 
+  const isZero = (number) => number === 0
+  const [targetPlace, setTargetPlace] = useState(props.targetPlace);
 
   const handleTakeOrder = async () => {
     const newPostID = 0;
-    if (itemsNumber.every(isZero)){
+    if (itemsNumber.every(isZero)) {
       alert("Please Order Something")
       return;
     }
-    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue).send({ from: accounts[0] });
+    let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    setTargetPlace(place);
+    console.log(Number(orderDetail[0]));
+    console.log(itemsNumber);
+    await contract.methods.UserSetMyOrderPost(newPostID, Number(orderDetail[0]), itemsNumber, tipValue, targetPlace).send({ from: accounts[0] });
   }
 
 
@@ -86,6 +94,12 @@ export default function CustomerOrderPage(props) {
       <Box className={classes.customerStoreOrderInfos}>
         <Typography variant="subtitle1">{orderDetail[3]}</Typography>
         <Typography variant="subtitle1">{orderTime}</Typography>
+        <TextField
+          label="Send to" placeholder="your home, company, or anywhere." fullWidth
+          defaultValue={targetPlace}
+          className={classes.customerStoreOrderInfos}
+          onChange={(event) => { setTargetPlace(event.target.value) }}
+        />
       </Box>
       {/* <Divider /> */}
       <Box className={classes.customerOrderMenu}>
@@ -96,7 +110,7 @@ export default function CustomerOrderPage(props) {
               <Grid item xs={9} sm={9}>
                 <Box className={classes.customerStoreMenuItemBox}>
                   <Typography className={classes.customerStoreMenuItemName}>{dish}</Typography>
-                  <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                  <Typography className={classes.customerStoreMenuItemPrice}>NTD${orderDetail[6][dish_index]}</Typography>
                 </ Box>
               </Grid>
               <Grid item xs={3} sm={3} className={classes.customerStoreMenuItemAmountGrid}>
@@ -104,10 +118,10 @@ export default function CustomerOrderPage(props) {
                   onChange={(event) => {
                     console.log(Number(event.target.value));
                     let itemsNumberChange = itemsNumber;
-                    if (!isNaN(Number(event.target.value))){
+                    if (!isNaN(Number(event.target.value))) {
                       itemsNumberChange[dish_index] = Number(event.target.value);
                     }
-                    else{
+                    else {
                       itemsNumberChange[dish_index] = Number(0);
                     }
                     console.log(itemsNumberChange);
@@ -125,12 +139,12 @@ export default function CustomerOrderPage(props) {
           <Typography variant="h5">Tips: $ </Typography>
           <TextField
             className={classes.customerOrderTipTextField}
-            onChange={(event) => { 
+            onChange={(event) => {
               let tips = 0;
               if (!isNaN(Number(event.target.value))) {
                 tips = Number(event.target.value)
               }
-              setTipValue(tips); 
+              setTipValue(tips);
             }}
           />
         </Box>
@@ -142,7 +156,7 @@ export default function CustomerOrderPage(props) {
             disabled={isTakingOrder}
           >
             Take These !
-    </Button>
+          </Button>
           {isTakingOrder && <CircularProgress size={24} className={classes.customerOrderButtonProgress} />}
         </Box>
       </Box>

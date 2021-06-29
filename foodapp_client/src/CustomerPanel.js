@@ -5,7 +5,7 @@ import {
 import { ShoppingCart, Store } from "@material-ui/icons";
 import React, { useEffect, useState } from 'react'
 import CustomerOrderPage from "./CustomerOrderPage";
-import { RateWideBar } from "./Rate";
+import { RateWideBar, ShowStoreRate } from "./Rate";
 import SingleOrder from "./SingleOrder";
 import { AddressWithBigTail, useStylesForOrdersPage } from "./Utils";
 
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     width: '100%',
     height: '100%',
+  },
+  customerPanelStoreRate: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   customerPanelStoreInfoSection: {
     padding: theme.spacing(2),
@@ -51,8 +55,10 @@ export default function CustomerPage(props) {
   const [orderDetail, setOrderDetail] = useState([]);
   const [ordertime, setOrderTime] = useState('');
   const [isOpenCart, setIsOpenCart] = useState(false);
-  const orderIDsList = [0, 1];
+  const [orderIDsList, setOrderIDsList] = useState([]);
 
+  const [targetPlace, setTargetPlace] = useState("");
+  const [rateArray, setRateArray] = useState([0, 0, 0, 0, 0]);
 
   const timeStamp = async () => {
     const timestamp = Date.now();
@@ -67,26 +73,40 @@ export default function CustomerPage(props) {
     timeStamp();
     setIsOrdering(true);
   }
-  const test = async () => {
-    const order = await contract.methods.GetAllOrderInformation().call({ from: accounts[0] })
-    console.log(order);
-  }
+
   const loadStore = async () => {
-    let storesDetail = []
-    if (contract != null) {
-      let idArray = await contract.methods.ListAllStore().call({ from: accounts[0] })
-      for (let i = 0; i < idArray.length; i++) {
-        let detail = await contract.methods.StoreIDGetStoreDetail(idArray[i]).call({ from: accounts[0] });
-        // console.log(detail);
-        storesDetail.push({
-          storeID: detail[0],
-          storeName: detail[2],
-          moreInfo: detail[4],
-          menu: detail[5].split("\n")
-        })
-      }
-      setStoreList(storesDetail);
+    if (contract === null) {
+      return;
     }
+    let storesDetail = []
+    let idArray = await contract.methods.ListAllStore().call({ from: accounts[0] })
+    for (let i = 0; i < idArray.length; i++) {
+      let detail = await contract.methods.StoreIDGetStoreDetail(idArray[i]).call({ from: accounts[0] });
+      let storeRate = await contract.methods.StoreIDGetRate(idArray[i]).call({ from: accounts[0] });
+      // console.log(detail);
+      storesDetail.push({
+        storeID: detail[0],
+        storeName: detail[2],
+        moreInfo: detail[4],
+        menu: detail[5].split("\n"),
+        itemsPrice: detail[6],
+        rate: storeRate
+      })
+    }
+    console.log(storesDetail);
+    setStoreList(storesDetail);
+    let place = await contract.methods.UserAddrGetTargetPlace().call({ from: accounts[0] });
+    setTargetPlace(place)
+
+    await contract.methods.AddrGetUserRate()
+      .call({ from: accounts[0] })
+      .then((result) => {
+        var i = 0;
+        for (i = 0; i < 5; i++) {
+          rateArray[i] = result[i];
+        }
+        setRateArray(rateArray);
+      })
   }
 
   useEffect(() => {
@@ -108,14 +128,17 @@ export default function CustomerPage(props) {
                   <Box className={classes.customerPanelStoreInfoSection}>
                     <Typography variant="h4">{store.storeName}</Typography>
                     <Typography variant="subtitle2">{store.moreInfo}</Typography>
+                    <Box className={classes.customerPanelStoreRate}>
+                      <ShowStoreRate rate={store.rate} />
+                    </Box>
                   </Box>
                   {/* <Divider /> */}
                   <Box className={classes.customerPanelStoreMenuSection}>
-                    {store.menu.map((item) => (
+                    {store.menu.map((item, menu_index) => (
                       <Box className={classes.customerStoreMenuItemBox}>
                         <Divider />
                         <Typography className={classes.customerStoreMenuItemName}>{item}</Typography>
-                        <Typography className={classes.customerStoreMenuItemPrice}>NTD$ 100</Typography>
+                        <Typography className={classes.customerStoreMenuItemPrice}>NTD${store.itemsPrice[menu_index]}</Typography>
                       </ Box>
                     ))}
                   </Box>
@@ -129,7 +152,7 @@ export default function CustomerPage(props) {
           <Box className={classesP.panelTitle}>
             <AddressWithBigTail address={accounts === null ? ("Loading...") : (accounts[0])} />
           </Box>
-          <RateWideBar />
+          {/* {<RateWideBar />} */}
           <Divider />
           <Grid container spacing={4} className={classesP.panelOrders}>
             {orderIDsList.map((id, index) => (
@@ -148,17 +171,15 @@ export default function CustomerPage(props) {
       <Box className={classesP.fabsBox}>
         <Fab
           color="primary"
-          aria-label="test"
-          className={classesP.fab}
-          onClick={test}
-        >
-          <Typography>test</Typography>
-        </Fab>
-        <Fab
-          color="primary"
           aria-label="check cart"
           className={classesP.fab}
-          onClick={() => { setIsOpenCart(!isOpenCart) }}
+          onClick={async () => {
+            setIsOpenCart(!isOpenCart);
+            const orderList = await contract.methods.UserAddrGetOrder().call({ from: accounts[0] })
+            setOrderIDsList(orderList);
+            console.log("orderList");
+            console.log(orderList);
+          }}
         >
           {isOpenCart ? (
             <Store />
@@ -173,6 +194,8 @@ export default function CustomerPage(props) {
           web3States={props.web3States}
           orderDetail={orderDetail}
           orderTime={ordertime}
+          // orderIDsList={orderIDsList}
+          targetPlace={targetPlace}
         >
         </CustomerOrderPage>
       </Dialog>
