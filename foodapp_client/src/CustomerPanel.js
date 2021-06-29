@@ -90,7 +90,7 @@ export default function CustomerPage(props) {
         moreInfo: detail[4],
         menu: detail[5].split("\n"),
         itemsPrice: detail[6],
-        rate: storeRate
+        rateArray: storeRate
       })
     }
     console.log(storesDetail);
@@ -129,7 +129,7 @@ export default function CustomerPage(props) {
                     <Typography variant="h4">{store.storeName}</Typography>
                     <Typography variant="subtitle2">{store.moreInfo}</Typography>
                     <Box className={classes.customerPanelStoreRate}>
-                      <ShowStoreRate rate={store.rate} />
+                      <ShowStoreRate rateArray={store.rateArray} />
                     </Box>
                   </Box>
                   {/* <Divider /> */}

@@ -166,11 +166,11 @@ export default function StorePanel(props) {
     await contract.methods.StoreIDGetRate(_storeID)
       .call({ from: accounts[0] })
       .then((result) => {
-        var i = 0;
+        var i = 0, _array=[];
         for (i = 0; i < 5; i++) {
-          rateArray[i] = result[i];
+          _array.push(result[i]);
         }
-        setRateArray(rateArray);
+        setRateArray(_array);
       })
     console.log("loaded store ", _storeID);
     setIsLoading(false);
@@ -259,7 +259,6 @@ export default function StorePanel(props) {
     setItemsPrice([]);
   }
 
-
   useEffect(() => {
     load_my_storeIDs();
   }, [contract])
@@ -279,7 +278,7 @@ export default function StorePanel(props) {
             </Box>
             <Typography>{moreInfo}</Typography>
           </Box>
-          <RateWideBar rateArray={rateArray} />
+          <RateWideBar id={storeID + "rates"} rateArray={rateArray} />
           <Divider />
           <Grid container spacing={4} className={classesP.panelOrders}>
             {storeOrderIDs.map((id, index) => (

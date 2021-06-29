@@ -257,7 +257,7 @@ export default function SingleOrder(props) {
             {/* {isTakingOrder && <CircularProgress size={24} className={classes.orderButtonProgress} />} */}
           </Box>
         )}
-        {parentIs === "Customer" && (
+        {(parentIs === "Customer" || parentIs === "Deliveryman") && isDelivered && (
           <Box className={classes.orderButtonWrapper}>
             <Button
               variant="contained"
@@ -270,7 +270,7 @@ export default function SingleOrder(props) {
             {isToRate && <CircularProgress size={24} className={classes.orderButtonProgress} />}
           </Box>
         )}
-        {(parentIs === 'Deliveryman' && myOrderChart == true) && (
+        {(parentIs === 'Deliveryman' && myOrderChart == true) && (!isDelivered) && (
           <Box className={classes.orderButtonWrapper}>
             <Button
               variant="contained"

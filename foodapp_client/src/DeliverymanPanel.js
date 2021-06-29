@@ -53,11 +53,11 @@ export default function DeliverymanPanel(props) {
       .call({ from: accounts[0] })
       .then((result) => {
         console.log(result)
-        var i = 0, array = [];
+        var i = 0, _array = [];
         for (i = 0; i < 5; i++) {
-          array.push(result[i]);
+          _array.push(result[i]);
         }
-        setRateArray(rateArray);
+        setRateArray(_array);
       })
 
     console.log(AllOrderList);

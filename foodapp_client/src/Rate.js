@@ -71,6 +71,25 @@ const BorderLinearProgress = withStyles((theme) => ({
   },
 }))(LinearProgress);
 
+const parseRateArray = (rateArray) => {
+  let n = 0, weighted_n = 0;
+  let _array = rateArray.map((rate, index) => {
+    let _a = parseInt(rate);
+    let value = (_a === _a) ? _a : 0;
+    n += value;
+    weighted_n += value * (index + 1);
+    return value;
+  });
+  if (!n) {
+    n += 1;
+  }
+  return { 
+    amount: n, 
+    averageFloat: (weighted_n / n),
+    averageStr: (weighted_n / n).toFixed(1),
+    array: _array
+  }
+}
 
 export function RateWideBar(props) {
   const classes = useStyles();
@@ -78,56 +97,46 @@ export function RateWideBar(props) {
 
   const [totalAmount, setTotalAmount] = useState(0);
   const [average, setAverage] = useState(0.0);
-
-  let array = [0, 0, 0, 0, 0];
-
+  const [array, setArray] = useState([0, 0, 0, 0, 0]);
 
   useEffect(() => {
-    let n = 0, weighted_n = 0;
-    array = rateArray.forEach((rate, index) => {
-      let value = (parseInt(rate) === parseInt(rate)) ? parseInt(rate) : 0;
-      n += value;
-      weighted_n += value * (index + 1);
-      return value;
-    });
-    if (!n) {
-      n += 1;
-    }
-    setTotalAmount(n);
-    setAverage((weighted_n / n).toFixed(1));
-  })
+    let Result = parseRateArray(props.rateArray);
+    setTotalAmount(Result.amount);
+    setAverage(Result.averageFloat);
+    setArray(Result.array);
+  }, [props])
 
   return (
     <Grid container spacing={1} className={classes.rateGrid} xs={12}>
       <Grid item xs={9} md={10} container direction='column' spacing={1}>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>5⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[4] / totalAmount} />
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[4] / totalAmount * 100} />
           <Typography className={classes.rateAmount}>{array[4]}</Typography>
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>4⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[3] / totalAmount} />
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[3] / totalAmount * 100} />
           <Typography className={classes.rateAmount}>{array[3]}</Typography>
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>3⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[2] / totalAmount} />
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[2] / totalAmount * 100} />
           <Typography className={classes.rateAmount}>{array[2]}</Typography>
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>2⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[1] / totalAmount} />
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[1] / totalAmount * 100} />
           <Typography className={classes.rateAmount}>{array[1]}</Typography>
         </Grid>
         <Grid item container spacing={1}>
           <Typography className={classes.rateLabel}>1⭐</Typography>
-          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[0] / totalAmount} />
+          <BorderLinearProgress variant='determinate' className={classes.rateBar} value={array[0] / totalAmount * 100} />
           <Typography className={classes.rateAmount}>{array[0]}</Typography>
         </Grid>
       </Grid>
       <Grid item xs sm md className={classes.rateSummaryGrid}>
-        <Typography variant="h2" align='center'>{average}</Typography>
+        <Typography variant="h2" align='center'>{average.toFixed(1)}</Typography>
         <Rating readOnly value={average} precision={0.1} />
       </Grid>
     </Grid>
@@ -260,7 +269,7 @@ export function RatingDialogContent(props) {
           />
         </Box>
       )}
-      <Button fullWidth disable={hasRated || isLoadingRate} variant="outlined"
+      <Button fullWidth disabled={hasRated || isLoadingRate} variant="outlined"
         onClick={sendRatings}
       >
         <Typography variant="h6">Rate</Typography>
@@ -274,8 +283,14 @@ export function RatingDialogContent(props) {
   )
 }
 
-export function ShowStoreRate(rateValue) {
+export function ShowStoreRate(props) {
+  const [average, setAverage] = useState(0);
+
+  useEffect(() => {
+    let Result = parseRateArray(props.rateArray);
+    setAverage(Result.averageFloat);
+  }, [props])
   return (
-    <Rating name="rate" defaultValue={rateValue} precision={0.1} readOnly />
+    <Rating name="rate" value={average} precision={0.1} readOnly />
   )
 }
