@@ -297,8 +297,10 @@ export default function StorePanel(props) {
       )}
       <Dialog open={isEditingInfo}
         onClose={() => {
+          if (currentStoreIndex === myStoresIDList.length - 1 && currentStoreIndex >= 1){
+            setCurrentStoreIndex(currentStoreIndex - 1);
+          }
           setIsEditingInfo(false);
-          setCurrentStoreIndex(currentStoreIndex - 1);
           // load_my_storeIDs();
         }}
       >
